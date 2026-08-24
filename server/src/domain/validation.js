@@ -51,7 +51,11 @@ export function validateGuess(guess, stintCount) {
       try {
         formattedVal = JSON.stringify(val);
       } catch {
-        formattedVal = String(val);
+        try {
+          formattedVal = String(val);
+        } catch {
+          formattedVal = `[${typeof val}]`;
+        }
       }
       throw new ValidationError(
         `Each guess entry must be a non-empty string. ` +

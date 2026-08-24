@@ -201,6 +201,21 @@ describe('isWin()', () => {
   it('returns false for empty array (no win without a guess)', () => {
     expect(isWin([])).toBe(false);
   });
+
+  it('returns false for sparse array with empty slots (new Array(3))', () => {
+    expect(isWin(new Array(3))).toBe(false);
+  });
+
+  it('returns false for array with holes between correct values', () => {
+    const sparse = [C, , C]; // eslint-disable-line no-sparse-arrays
+    expect(isWin(sparse)).toBe(false);
+  });
+
+  it('returns false for non-array inputs', () => {
+    expect(isWin(null)).toBe(false);
+    expect(isWin(undefined)).toBe(false);
+    expect(isWin(C)).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -295,6 +310,15 @@ describe('validateGuess()', () => {
     const circular = {};
     circular.self = circular;
     expect(() => validateGuess(['LAL', circular], 2)).toThrow(ValidationError);
+  });
+
+  it('throws ValidationError when an element has a throwing toString or toJSON', () => {
+    const hostile = {
+      toString() {
+        throw new Error('Hostile toString');
+      },
+    };
+    expect(() => validateGuess(['LAL', hostile], 2)).toThrow(ValidationError);
   });
 
   it('singular "team ID" (not plural) when stintCount is 1', () => {

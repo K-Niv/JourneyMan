@@ -71,13 +71,14 @@ export function gradeGuess(guess, answer) {
   return feedback;
 }
 
-/**
- * Determine whether a feedback array represents a winning guess
- * (every slot is 'correct').
- *
- * @param {string[]} feedback - Output of gradeGuess().
- * @returns {boolean}
- */
 export function isWin(feedback) {
-  return feedback.length > 0 && feedback.every((f) => f === FEEDBACK.CORRECT);
+  if (!Array.isArray(feedback) || feedback.length === 0) {
+    return false;
+  }
+  for (let i = 0; i < feedback.length; i++) {
+    if (feedback[i] !== FEEDBACK.CORRECT) {
+      return false;
+    }
+  }
+  return true;
 }

@@ -45,10 +45,17 @@ export function validateGuess(guess, stintCount) {
   }
 
   for (let i = 0; i < guess.length; i++) {
-    if (typeof guess[i] !== 'string' || guess[i].trim() === '') {
+    const val = guess[i];
+    if (typeof val !== 'string' || val.trim() === '') {
+      let formattedVal;
+      try {
+        formattedVal = JSON.stringify(val);
+      } catch {
+        formattedVal = String(val);
+      }
       throw new ValidationError(
         `Each guess entry must be a non-empty string. ` +
-        `Invalid value at index ${i}: ${JSON.stringify(guess[i])}`
+        `Invalid value at index ${i}: ${formattedVal}`
       );
     }
   }

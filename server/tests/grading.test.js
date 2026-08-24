@@ -75,73 +75,80 @@ describe('gradeGuess()', () => {
     expect(gradeGuess(guess, answer)).toEqual([X, X, X, X, X, X]);
   });
 
-  // --- Duplicate team in ANSWER ---
+  // --- Duplicate team in GUESS (single in answer) ---
 
-  it('duplicate in answer: guess one correct, one incorrect (no second copy in guess)', () => {
-    // Answer: [LAL, BOS], Guess: [LAL, NYK]
-    // LAL correct at pos 0; NYK has no match → incorrect
-    expect(gradeGuess(['LAL', 'NYK'], ['LAL', 'BOS'])).toEqual([C, X]);
+  it('duplicate in guess: exact match takes priority, second copy is incorrect', () => {
+    // Answer: [BOS, LAL], Guess: [LAL, LAL]
+    // pos 0: LAL != BOS
+    // pos 1: LAL == LAL -> correct (claims answer[1])
+    // pos 0: LAL has no unclaimed LAL in answer -> incorrect
+    expect(gradeGuess(['LAL', 'LAL'], ['BOS', 'LAL'])).toEqual([X, C]);
   });
 
-  it('duplicate in answer: both slots filled with correct team', () => {
+  it('duplicate in guess: first copy correct, second copy incorrect', () => {
+    // Answer: [LAL, BOS], Guess: [LAL, LAL]
+    // pos 0: LAL == LAL -> correct (claims answer[0])
+    // pos 1: LAL has no unclaimed LAL in answer -> incorrect
+    expect(gradeGuess(['LAL', 'LAL'], ['LAL', 'BOS'])).toEqual([C, X]);
+  });
+
+  it('duplicate in guess: only one copy marked misplaced when not in exact position', () => {
+    // Answer: [LAL, BOS, MIA], Guess: [BOS, LAL, LAL]
+    // pass 1: all positions differ
+    // pass 2: BOS -> misplaced (claims answer[1]); first LAL -> misplaced (claims answer[0]); second LAL -> incorrect
+    expect(gradeGuess(['BOS', 'LAL', 'LAL'], ['LAL', 'BOS', 'MIA'])).toEqual([M, M, X]);
+  });
+
+  it('triple duplicate in guess vs single in answer: one correct, others incorrect', () => {
+    // Answer: [LAL, BOS, MIA], Guess: [LAL, LAL, LAL]
+    // pass 1: pos 0 LAL == LAL -> correct (claims answer[0])
+    // pass 2: remaining LALs have no unclaimed LAL -> incorrect
+    expect(gradeGuess(['LAL', 'LAL', 'LAL'], ['LAL', 'BOS', 'MIA'])).toEqual([C, X, X]);
+  });
+
+  // --- Duplicate team in ANSWER (single in guess) ---
+
+  it('duplicate in answer: single guess matches exact position, other slot incorrect', () => {
+    // Answer: [LAL, LAL], Guess: [LAL, NYK]
+    expect(gradeGuess(['LAL', 'NYK'], ['LAL', 'LAL'])).toEqual([C, X]);
+  });
+
+  it('duplicate in answer: single guess matches as misplaced if wrong position', () => {
+    // Answer: [LAL, BOS, LAL], Guess: [MIA, LAL, GSW]
+    // pass 1: no exact matches
+    // pass 2: LAL at pos 1 claims one LAL from answer -> misplaced
+    expect(gradeGuess(['MIA', 'LAL', 'GSW'], ['LAL', 'BOS', 'LAL'])).toEqual([X, M, X]);
+  });
+
+  // --- Duplicate team in BOTH answer and guess ---
+
+  it('duplicate in both: both slots filled with correct team in exact positions', () => {
     // Answer: [LAL, LAL], Guess: [LAL, LAL] — both correct
     expect(gradeGuess(['LAL', 'LAL'], ['LAL', 'LAL'])).toEqual([C, C]);
   });
 
-  it('duplicate in answer: misplaced + correct', () => {
-    // Answer: [BOS, LAL], Guess: [LAL, LAL]
-    // pos 0: LAL != BOS → pass 1 skips; pos 1: LAL == LAL → correct, answerUsed[1]=true
-    // pass 2 pos 0: LAL scans answer → BOS no, LAL[1] used → no match → incorrect
-    expect(gradeGuess(['LAL', 'LAL'], ['BOS', 'LAL'])).toEqual([X, C]);
-  });
-
-  it('duplicate in answer: correct + misplaced ordering', () => {
-    // Answer: [LAL, BOS], Guess: [LAL, LAL]
-    // pos 0: LAL == LAL → correct, answerUsed[0]=true
-    // pass 2 pos 1: LAL scans → LAL[0] used, BOS no → incorrect
-    expect(gradeGuess(['LAL', 'LAL'], ['LAL', 'BOS'])).toEqual([C, X]);
-  });
-
-  // --- Duplicate team in GUESS ---
-
-  it('duplicate in guess, only one slot in answer: first copy misplaced, second incorrect', () => {
-    // Answer: [BOS, LAL], Guess: [LAL, LAL]
-    // pass 1: pos 0 LAL!=BOS, pos 1 LAL==LAL → correct
-    // pass 2: pos 0 LAL → BOS no, LAL[1] already used → incorrect
-    expect(gradeGuess(['LAL', 'LAL'], ['BOS', 'LAL'])).toEqual([X, C]);
-  });
-
-  it('duplicate in guess matches once misplaced when not in same position', () => {
-    // Answer: [LAL, BOS, MIA], Guess: [BOS, LAL, LAL]
-    // pass 1: all wrong positions
-    // pass 2: BOS → answer[1]=BOS → misplaced; LAL → answer[0]=LAL → misplaced; LAL → no remaining LAL → incorrect
-    expect(gradeGuess(['BOS', 'LAL', 'LAL'], ['LAL', 'BOS', 'MIA'])).toEqual([M, M, X]);
-  });
-
-  it('triple duplicate in guess vs single in answer: only one misplaced', () => {
-    // Answer: [LAL, BOS, MIA], Guess: [LAL, LAL, LAL]
-    // pass 1: pos 0 LAL==LAL → correct
-    // pass 2: pos 1 LAL → LAL[0] used, BOS no, MIA no → incorrect
-    //          pos 2 LAL → same → incorrect
-    expect(gradeGuess(['LAL', 'LAL', 'LAL'], ['LAL', 'BOS', 'MIA'])).toEqual([C, X, X]);
+  it('duplicate in both: one correct, one misplaced', () => {
+    // Answer: [LAL, LAL, MIA], Guess: [MIA, LAL, LAL]
+    // pass 1: pos 1 LAL == LAL -> correct (claims answer[1])
+    // pass 2: pos 0 MIA -> misplaced (claims answer[2]); pos 2 LAL -> misplaced (claims answer[0])
+    expect(gradeGuess(['MIA', 'LAL', 'LAL'], ['LAL', 'LAL', 'MIA'])).toEqual([M, C, M]);
   });
 
   // --- Edge: player had same team as 2 separate stints (LeBron CLE→MIA→CLE→LAL style) ---
 
-  it('answer with same team at two positions (returning player): both positions guessed correctly', () => {
+  it('returning player in answer: all positions guessed correctly', () => {
     // LeBron-style: CLE at pos 0 and pos 2
     expect(gradeGuess(['CLE', 'MIA', 'CLE'], ['CLE', 'MIA', 'CLE'])).toEqual([C, C, C]);
   });
 
-  it('answer with same team at two positions: guess has them swapped — both misplaced', () => {
-    // CLE at positions 0 and 2, guess has MIA at 0 and CLE at 1 and CLE at 2
+  it('returning player in answer: mixed correct and misplaced', () => {
     // Answer: [CLE, MIA, CLE], Guess: [MIA, CLE, CLE]
-    // pass 1: pos 2 CLE==CLE → correct, answerUsed[2]=true
-    // pass 2: pos 0 MIA → answer[1]=MIA → misplaced; pos 1 CLE → answer[0]=CLE → misplaced
+    // pass 1: pos 2 CLE == CLE -> correct (claims answer[2])
+    // pass 2: pos 0 MIA -> misplaced (claims answer[1]); pos 1 CLE -> misplaced (claims answer[0])
     expect(gradeGuess(['MIA', 'CLE', 'CLE'], ['CLE', 'MIA', 'CLE'])).toEqual([M, M, C]);
   });
 
-  it('answer with same team at two positions: guess only provides one — other incorrect', () => {
+  it('returning player in answer: single guess provides only one instance', () => {
     // Answer: [CLE, MIA, CLE], Guess: [CLE, MIA, BOS]
     expect(gradeGuess(['CLE', 'MIA', 'BOS'], ['CLE', 'MIA', 'CLE'])).toEqual([C, C, X]);
   });
@@ -278,6 +285,16 @@ describe('validateGuess()', () => {
 
   it('error message includes the received count when wrong length', () => {
     expect(() => validateGuess(['LAL'], 3)).toThrow('received 1');
+  });
+
+  it('throws ValidationError when an element is a BigInt', () => {
+    expect(() => validateGuess(['LAL', 100n], 2)).toThrow(ValidationError);
+  });
+
+  it('throws ValidationError when an element is a circular object', () => {
+    const circular = {};
+    circular.self = circular;
+    expect(() => validateGuess(['LAL', circular], 2)).toThrow(ValidationError);
   });
 
   it('singular "team ID" (not plural) when stintCount is 1', () => {

@@ -27,3 +27,6 @@ logs/
 Thumbs.db
 .vscode/
 .idea/
+
+# Script-generated backups
+*.bak

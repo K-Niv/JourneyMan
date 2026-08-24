@@ -15,12 +15,22 @@
     "build": "npm run build --workspace=client",
     "lint": "eslint . --ext .js,.jsx",
     "format": "prettier --write .",
-    "test": "npm run test --workspace=shared && npm run test --workspace=server && npm run test --workspace=client"
+    "test": "npm run test --workspace=shared && npm run test --workspace=server && npm run test --workspace=client",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset --schema=./prisma/schema.prisma",
+    "generate-puzzles": "node scripts/generate-puzzles.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "prisma": "^5.14.0"
   }
 }

@@ -1,0 +1,100 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id           String        @id @default(uuid())
+  name         String        @unique // "Los Angeles Lakers"
+  abbreviation String        @unique // "LAL"
+  logoUrl      String?
+  conference   String? // "Western"
+  division     String? // "Pacific"
+  careerStints CareerStint[]
+
+  @@map("teams")
+}
+
+model Player {
+  id              String        @id @default(uuid())
+  firstName       String
+  lastName        String
+  imageUrl        String?
+  careerStartYear Int?
+  careerEndYear   Int?
+  careerStints    CareerStint[]
+  dailyPuzzles    DailyPuzzle[]
+
+  @@unique([firstName, lastName])
+  @@map("players")
+}
+
+model CareerStint {
+  id          String @id @default(uuid())
+  playerId    String
+  teamId      String
+  stintOrder  Int // 1-indexed chronological order
+  startYear   Int
+  endYear     Int
+  gamesPlayed Int // Regular season games played in this stint
+
+  player Player @relation(fields: [playerId], references: [id])
+  team   Team   @relation(fields: [teamId], references: [id])
+
+  @@unique([playerId, stintOrder]) // A player can't have two stints at the same order
+  @@index([playerId])
+  @@map("career_stints")
+}
+
+model DailyPuzzle {
+  id           String        @id @default(uuid())
+  date         DateTime      @unique @db.Date // Calendar date (UTC)
+  puzzleNumber Int           @unique // Sequential puzzle #
+  playerId     String
+  difficulty   String // 'easy' | 'medium' | 'hard' | 'expert'
+  maxAttempts  Int           @default(6)
+
+  player       Player        @relation(fields: [playerId], references: [id])
+  dailyResults DailyResult[]
+
+  @@index([date])
+  @@map("daily_puzzles")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String?  @unique
+  passwordHash String?
+  displayName  String?
+  anonymousId  String?  @unique
+  createdAt    DateTime @default(now())
+
+  dailyResults DailyResult[]
+
+  @@map("users")
+}
+
+model DailyResult {
+  id          String   @id @default(uuid())
+  userId      String
+  puzzleId    String
+  won         Boolean
+  attempts    Int
+  guesses     Json // Array of guess arrays (team IDs per attempt)
+  feedback    Json // Array of feedback arrays ('correct' | 'misplaced' | 'incorrect')
+  completedAt DateTime @default(now())
+
+  user   User        @relation(fields: [userId], references: [id])
+  puzzle DailyPuzzle @relation(fields: [puzzleId], references: [id])
+
+  @@unique([userId, puzzleId])
+  @@index([userId])
+  @@index([puzzleId])
+  @@map("daily_results")
+}

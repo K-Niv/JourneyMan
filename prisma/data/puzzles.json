@@ -1,0 +1,1262 @@
+[
+  {
+    "date": "2026-08-24",
+    "puzzleNumber": 1,
+    "playerFirstName": "Mike",
+    "playerLastName": "Bibby",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-08-25",
+    "puzzleNumber": 2,
+    "playerFirstName": "Rolando",
+    "playerLastName": "Blackman",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-08-26",
+    "puzzleNumber": 3,
+    "playerFirstName": "Alaa",
+    "playerLastName": "Abdelnaby",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-08-27",
+    "puzzleNumber": 4,
+    "playerFirstName": "Ryan",
+    "playerLastName": "Hollins",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-08-28",
+    "puzzleNumber": 5,
+    "playerFirstName": "Frank",
+    "playerLastName": "Saul",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-08-29",
+    "puzzleNumber": 6,
+    "playerFirstName": "Norman",
+    "playerLastName": "Powell",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-08-30",
+    "puzzleNumber": 7,
+    "playerFirstName": "Jim",
+    "playerLastName": "Price",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-08-31",
+    "puzzleNumber": 8,
+    "playerFirstName": "Kostas",
+    "playerLastName": "Papanikolaou",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-09-01",
+    "puzzleNumber": 9,
+    "playerFirstName": "Zan",
+    "playerLastName": "Tabak",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-02",
+    "puzzleNumber": 10,
+    "playerFirstName": "Bobby",
+    "playerLastName": "Hurley",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-09-03",
+    "puzzleNumber": 11,
+    "playerFirstName": "Goran",
+    "playerLastName": "Dragic",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-09-04",
+    "puzzleNumber": 12,
+    "playerFirstName": "Anthony",
+    "playerLastName": "Roberts",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-09-05",
+    "puzzleNumber": 13,
+    "playerFirstName": "Steve",
+    "playerLastName": "Kuberski",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-06",
+    "puzzleNumber": 14,
+    "playerFirstName": "Kyle",
+    "playerLastName": "Anderson",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-09-07",
+    "puzzleNumber": 15,
+    "playerFirstName": "Immanuel",
+    "playerLastName": "Quickley",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-09-08",
+    "puzzleNumber": 16,
+    "playerFirstName": "Corky",
+    "playerLastName": "Calhoun",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-09",
+    "puzzleNumber": 17,
+    "playerFirstName": "Alex",
+    "playerLastName": "Acker",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-09-10",
+    "puzzleNumber": 18,
+    "playerFirstName": "Louie",
+    "playerLastName": "Nelson",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-11",
+    "puzzleNumber": 19,
+    "playerFirstName": "Devean",
+    "playerLastName": "George",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-09-12",
+    "puzzleNumber": 20,
+    "playerFirstName": "Jordan",
+    "playerLastName": "Bell",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-09-13",
+    "puzzleNumber": 21,
+    "playerFirstName": "Kyle",
+    "playerLastName": "Lowry",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-14",
+    "puzzleNumber": 22,
+    "playerFirstName": "Robert",
+    "playerLastName": "Pack",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-09-15",
+    "puzzleNumber": 23,
+    "playerFirstName": "Domantas",
+    "playerLastName": "Sabonis",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-09-16",
+    "puzzleNumber": 24,
+    "playerFirstName": "Elden",
+    "playerLastName": "Campbell",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-09-17",
+    "puzzleNumber": 25,
+    "playerFirstName": "Josh",
+    "playerLastName": "Harrellson",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-09-18",
+    "puzzleNumber": 26,
+    "playerFirstName": "Andre",
+    "playerLastName": "Barrett",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-09-19",
+    "puzzleNumber": 27,
+    "playerFirstName": "Paul",
+    "playerLastName": "Hoffman",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-09-20",
+    "puzzleNumber": 28,
+    "playerFirstName": "Zach",
+    "playerLastName": "Collins",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-09-21",
+    "puzzleNumber": 29,
+    "playerFirstName": "Lamar",
+    "playerLastName": "Odom",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-22",
+    "puzzleNumber": 30,
+    "playerFirstName": "Allan",
+    "playerLastName": "Bristow",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-09-23",
+    "puzzleNumber": 31,
+    "playerFirstName": "Byron",
+    "playerLastName": "Scott",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-24",
+    "puzzleNumber": 32,
+    "playerFirstName": "Phil",
+    "playerLastName": "Pressey",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-09-25",
+    "puzzleNumber": 33,
+    "playerFirstName": "Sidy",
+    "playerLastName": "Cissoko",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-09-26",
+    "puzzleNumber": 34,
+    "playerFirstName": "Kareem",
+    "playerLastName": "Rush",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-27",
+    "puzzleNumber": 35,
+    "playerFirstName": "Malevy",
+    "playerLastName": "Leons",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-09-28",
+    "puzzleNumber": 36,
+    "playerFirstName": "Austin",
+    "playerLastName": "Carr",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-09-29",
+    "puzzleNumber": 37,
+    "playerFirstName": "Fred",
+    "playerLastName": "Jones",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-09-30",
+    "puzzleNumber": 38,
+    "playerFirstName": "Ivano",
+    "playerLastName": "Newbill",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-10-01",
+    "puzzleNumber": 39,
+    "playerFirstName": "Adrian",
+    "playerLastName": "Caldwell",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-10-02",
+    "puzzleNumber": 40,
+    "playerFirstName": "Rick",
+    "playerLastName": "Carlisle",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-10-03",
+    "puzzleNumber": 41,
+    "playerFirstName": "Terry",
+    "playerLastName": "Teagle",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-10-04",
+    "puzzleNumber": 42,
+    "playerFirstName": "Raymond",
+    "playerLastName": "Felton",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-05",
+    "puzzleNumber": 43,
+    "playerFirstName": "Kenyon",
+    "playerLastName": "Martin",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-10-06",
+    "puzzleNumber": 44,
+    "playerFirstName": "Jalen",
+    "playerLastName": "Slawson",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-10-07",
+    "puzzleNumber": 45,
+    "playerFirstName": "Mack",
+    "playerLastName": "Calvin",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-10-08",
+    "puzzleNumber": 46,
+    "playerFirstName": "Dorell",
+    "playerLastName": "Wright",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-10-09",
+    "puzzleNumber": 47,
+    "playerFirstName": "Corie",
+    "playerLastName": "Blount",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-10",
+    "puzzleNumber": 48,
+    "playerFirstName": "Vonteego",
+    "playerLastName": "Cummings",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-10-11",
+    "puzzleNumber": 49,
+    "playerFirstName": "George",
+    "playerLastName": "Zidek",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-10-12",
+    "puzzleNumber": 50,
+    "playerFirstName": "DaQuan",
+    "playerLastName": "Jeffries",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-13",
+    "puzzleNumber": 51,
+    "playerFirstName": "Perry",
+    "playerLastName": "Moss",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-10-14",
+    "puzzleNumber": 52,
+    "playerFirstName": "Toure'",
+    "playerLastName": "Murry",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-10-15",
+    "puzzleNumber": 53,
+    "playerFirstName": "Anthony",
+    "playerLastName": "Goldwire",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-16",
+    "puzzleNumber": 54,
+    "playerFirstName": "Chris",
+    "playerLastName": "Richard",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-10-17",
+    "puzzleNumber": 55,
+    "playerFirstName": "Marty",
+    "playerLastName": "Conlon",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-18",
+    "puzzleNumber": 56,
+    "playerFirstName": "Ron",
+    "playerLastName": "Baker",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-10-19",
+    "puzzleNumber": 57,
+    "playerFirstName": "Wilson",
+    "playerLastName": "Chandler",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-10-20",
+    "puzzleNumber": 58,
+    "playerFirstName": "Chris",
+    "playerLastName": "Paul",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-21",
+    "puzzleNumber": 59,
+    "playerFirstName": "Cheikh",
+    "playerLastName": "Samb",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-10-22",
+    "puzzleNumber": 60,
+    "playerFirstName": "Shaquille",
+    "playerLastName": "O'Neal",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-23",
+    "puzzleNumber": 61,
+    "playerFirstName": "Jarrod",
+    "playerLastName": "Uthoff",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-10-24",
+    "puzzleNumber": 62,
+    "playerFirstName": "Brandon",
+    "playerLastName": "Jennings",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-25",
+    "puzzleNumber": 63,
+    "playerFirstName": "PJ",
+    "playerLastName": "Hairston",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-10-26",
+    "puzzleNumber": 64,
+    "playerFirstName": "Mike",
+    "playerLastName": "O'Koren",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-10-27",
+    "puzzleNumber": 65,
+    "playerFirstName": "Joe",
+    "playerLastName": "Crispin",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-10-28",
+    "puzzleNumber": 66,
+    "playerFirstName": "Xavier",
+    "playerLastName": "Sneed",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-10-29",
+    "puzzleNumber": 67,
+    "playerFirstName": "Carlos",
+    "playerLastName": "Delfino",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-10-30",
+    "puzzleNumber": 68,
+    "playerFirstName": "Brian",
+    "playerLastName": "Shaw",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-10-31",
+    "puzzleNumber": 69,
+    "playerFirstName": "AJ",
+    "playerLastName": "Johnson",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-11-01",
+    "puzzleNumber": 70,
+    "playerFirstName": "Andrew",
+    "playerLastName": "Goudelock",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-11-02",
+    "puzzleNumber": 71,
+    "playerFirstName": "Raef",
+    "playerLastName": "LaFrentz",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-11-03",
+    "puzzleNumber": 72,
+    "playerFirstName": "Harold",
+    "playerLastName": "Miner",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-11-04",
+    "puzzleNumber": 73,
+    "playerFirstName": "Chris",
+    "playerLastName": "Carr",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-11-05",
+    "puzzleNumber": 74,
+    "playerFirstName": "Micah",
+    "playerLastName": "Potter",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-11-06",
+    "puzzleNumber": 75,
+    "playerFirstName": "Bob",
+    "playerLastName": "Harris",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-11-07",
+    "puzzleNumber": 76,
+    "playerFirstName": "MarShon",
+    "playerLastName": "Brooks",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-11-08",
+    "puzzleNumber": 77,
+    "playerFirstName": "Jarrett",
+    "playerLastName": "Allen",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-11-09",
+    "puzzleNumber": 78,
+    "playerFirstName": "Mike",
+    "playerLastName": "Muscala",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-11-10",
+    "puzzleNumber": 79,
+    "playerFirstName": "Kira",
+    "playerLastName": "Lewis Jr.",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-11-11",
+    "puzzleNumber": 80,
+    "playerFirstName": "Armond",
+    "playerLastName": "Hill",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-11-12",
+    "puzzleNumber": 81,
+    "playerFirstName": "Ken",
+    "playerLastName": "Norman",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-11-13",
+    "puzzleNumber": 82,
+    "playerFirstName": "Charlie",
+    "playerLastName": "Tyra",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-11-14",
+    "puzzleNumber": 83,
+    "playerFirstName": "Clyde",
+    "playerLastName": "Lovellette",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-11-15",
+    "puzzleNumber": 84,
+    "playerFirstName": "Todd",
+    "playerLastName": "Lichti",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-11-16",
+    "puzzleNumber": 85,
+    "playerFirstName": "Kevin",
+    "playerLastName": "Restani",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-11-17",
+    "puzzleNumber": 86,
+    "playerFirstName": "Rafer",
+    "playerLastName": "Alston",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-11-18",
+    "puzzleNumber": 87,
+    "playerFirstName": "Ben",
+    "playerLastName": "Simmons",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-11-19",
+    "puzzleNumber": 88,
+    "playerFirstName": "Marty",
+    "playerLastName": "Byrnes",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-11-20",
+    "puzzleNumber": 89,
+    "playerFirstName": "Mo",
+    "playerLastName": "Bamba",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-11-21",
+    "puzzleNumber": 90,
+    "playerFirstName": "Mike",
+    "playerLastName": "Bantom",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-11-22",
+    "puzzleNumber": 91,
+    "playerFirstName": "Dwight",
+    "playerLastName": "Howard",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-11-23",
+    "puzzleNumber": 92,
+    "playerFirstName": "Joe",
+    "playerLastName": "Wieskamp",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-11-24",
+    "puzzleNumber": 93,
+    "playerFirstName": "Kevin",
+    "playerLastName": "Knox II",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-11-25",
+    "puzzleNumber": 94,
+    "playerFirstName": "De'Aaron",
+    "playerLastName": "Fox",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-11-26",
+    "puzzleNumber": 95,
+    "playerFirstName": "Robert",
+    "playerLastName": "Reid",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-11-27",
+    "puzzleNumber": 96,
+    "playerFirstName": "Andrew",
+    "playerLastName": "Bynum",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-11-28",
+    "puzzleNumber": 97,
+    "playerFirstName": "Ed",
+    "playerLastName": "Pinckney",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-11-29",
+    "puzzleNumber": 98,
+    "playerFirstName": "Trent",
+    "playerLastName": "Tucker",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-11-30",
+    "puzzleNumber": 99,
+    "playerFirstName": "Antoine",
+    "playerLastName": "Wright",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-01",
+    "puzzleNumber": 100,
+    "playerFirstName": "Chris",
+    "playerLastName": "Andersen",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-12-02",
+    "puzzleNumber": 101,
+    "playerFirstName": "Luke",
+    "playerLastName": "Walton",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-12-03",
+    "puzzleNumber": 102,
+    "playerFirstName": "Eddie",
+    "playerLastName": "Johnson",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-04",
+    "puzzleNumber": 103,
+    "playerFirstName": "Bill",
+    "playerLastName": "Walton",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-12-05",
+    "puzzleNumber": 104,
+    "playerFirstName": "Chris",
+    "playerLastName": "Johnson",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-06",
+    "puzzleNumber": 105,
+    "playerFirstName": "Mario",
+    "playerLastName": "Chalmers",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-12-07",
+    "puzzleNumber": 106,
+    "playerFirstName": "Scott",
+    "playerLastName": "Wedman",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-12-08",
+    "puzzleNumber": 107,
+    "playerFirstName": "Luis",
+    "playerLastName": "Scola",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-09",
+    "puzzleNumber": 108,
+    "playerFirstName": "Darren",
+    "playerLastName": "Collison",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-12-10",
+    "puzzleNumber": 109,
+    "playerFirstName": "Leaky",
+    "playerLastName": "Black",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-12-11",
+    "puzzleNumber": 110,
+    "playerFirstName": "Craig",
+    "playerLastName": "Ehlo",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-12",
+    "puzzleNumber": 111,
+    "playerFirstName": "Greg",
+    "playerLastName": "Buckner",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-12-13",
+    "puzzleNumber": 112,
+    "playerFirstName": "Anthony",
+    "playerLastName": "Bowie",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-12-14",
+    "puzzleNumber": 113,
+    "playerFirstName": "Danny",
+    "playerLastName": "Green",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-12-15",
+    "puzzleNumber": 114,
+    "playerFirstName": "Roger",
+    "playerLastName": "Phegley",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-16",
+    "puzzleNumber": 115,
+    "playerFirstName": "Mark",
+    "playerLastName": "Aguirre",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-12-17",
+    "puzzleNumber": 116,
+    "playerFirstName": "Taurean",
+    "playerLastName": "Prince",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-12-18",
+    "puzzleNumber": 117,
+    "playerFirstName": "Chris",
+    "playerLastName": "Robinson",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-12-19",
+    "puzzleNumber": 118,
+    "playerFirstName": "Devin",
+    "playerLastName": "Harris",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-12-20",
+    "puzzleNumber": 119,
+    "playerFirstName": "Jack",
+    "playerLastName": "White",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-12-21",
+    "puzzleNumber": 120,
+    "playerFirstName": "Jason",
+    "playerLastName": "Kidd",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-22",
+    "puzzleNumber": 121,
+    "playerFirstName": "Don",
+    "playerLastName": "Nelson",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-12-23",
+    "puzzleNumber": 122,
+    "playerFirstName": "Peja",
+    "playerLastName": "Stojakovic",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-24",
+    "puzzleNumber": 123,
+    "playerFirstName": "Saben",
+    "playerLastName": "Lee",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2026-12-25",
+    "puzzleNumber": 124,
+    "playerFirstName": "Gene",
+    "playerLastName": "Conley",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-12-26",
+    "puzzleNumber": 125,
+    "playerFirstName": "Bob",
+    "playerLastName": "Warlick",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-27",
+    "puzzleNumber": 126,
+    "playerFirstName": "Eric",
+    "playerLastName": "Leckner",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2026-12-28",
+    "puzzleNumber": 127,
+    "playerFirstName": "Pascal",
+    "playerLastName": "Siakam",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-12-29",
+    "puzzleNumber": 128,
+    "playerFirstName": "Davon",
+    "playerLastName": "Reed",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2026-12-30",
+    "puzzleNumber": 129,
+    "playerFirstName": "Yakhouba",
+    "playerLastName": "Diawara",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2026-12-31",
+    "puzzleNumber": 130,
+    "playerFirstName": "Spencer",
+    "playerLastName": "Dinwiddie",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-01-01",
+    "puzzleNumber": 131,
+    "playerFirstName": "Kemba",
+    "playerLastName": "Walker",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-01-02",
+    "puzzleNumber": 132,
+    "playerFirstName": "Scott",
+    "playerLastName": "May",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-01-03",
+    "puzzleNumber": 133,
+    "playerFirstName": "Mo",
+    "playerLastName": "Williams",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-01-04",
+    "puzzleNumber": 134,
+    "playerFirstName": "Jalen",
+    "playerLastName": "Smith",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-01-05",
+    "puzzleNumber": 135,
+    "playerFirstName": "Daeqwon",
+    "playerLastName": "Plowden",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-01-06",
+    "puzzleNumber": 136,
+    "playerFirstName": "Michael",
+    "playerLastName": "Holton",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-01-07",
+    "puzzleNumber": 137,
+    "playerFirstName": "Stephane",
+    "playerLastName": "Lasme",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-01-08",
+    "puzzleNumber": 138,
+    "playerFirstName": "DeMarcus",
+    "playerLastName": "Cousins",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-01-09",
+    "puzzleNumber": 139,
+    "playerFirstName": "Frank",
+    "playerLastName": "Jackson",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-01-10",
+    "puzzleNumber": 140,
+    "playerFirstName": "Matisse",
+    "playerLastName": "Thybulle",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-01-11",
+    "puzzleNumber": 141,
+    "playerFirstName": "Juan",
+    "playerLastName": "Dixon",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-01-12",
+    "puzzleNumber": 142,
+    "playerFirstName": "Chad",
+    "playerLastName": "Kinch",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-01-13",
+    "puzzleNumber": 143,
+    "playerFirstName": "Alex",
+    "playerLastName": "Hannum",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-01-14",
+    "puzzleNumber": 144,
+    "playerFirstName": "Dwayne",
+    "playerLastName": "Bacon",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-01-15",
+    "puzzleNumber": 145,
+    "playerFirstName": "Antonio",
+    "playerLastName": "Daniels",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-01-16",
+    "puzzleNumber": 146,
+    "playerFirstName": "Mengke",
+    "playerLastName": "Bateer",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-01-17",
+    "puzzleNumber": 147,
+    "playerFirstName": "Melvin",
+    "playerLastName": "Ely",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-01-18",
+    "puzzleNumber": 148,
+    "playerFirstName": "Facundo",
+    "playerLastName": "Campazzo",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-01-19",
+    "puzzleNumber": 149,
+    "playerFirstName": "Marc",
+    "playerLastName": "Jackson",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-01-20",
+    "puzzleNumber": 150,
+    "playerFirstName": "Dejounte",
+    "playerLastName": "Murray",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-01-21",
+    "puzzleNumber": 151,
+    "playerFirstName": "John",
+    "playerLastName": "Jenkins",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-01-22",
+    "puzzleNumber": 152,
+    "playerFirstName": "Garrett",
+    "playerLastName": "Temple",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-01-23",
+    "puzzleNumber": 153,
+    "playerFirstName": "Kyrylo",
+    "playerLastName": "Fesenko",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-01-24",
+    "puzzleNumber": 154,
+    "playerFirstName": "Ronald",
+    "playerLastName": "Dupree",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-01-25",
+    "puzzleNumber": 155,
+    "playerFirstName": "Brandon",
+    "playerLastName": "Rush",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-01-26",
+    "puzzleNumber": 156,
+    "playerFirstName": "David",
+    "playerLastName": "Roddy",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-01-27",
+    "puzzleNumber": 157,
+    "playerFirstName": "Justin",
+    "playerLastName": "Hamilton",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-01-28",
+    "puzzleNumber": 158,
+    "playerFirstName": "Jerry",
+    "playerLastName": "Lucas",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-01-29",
+    "puzzleNumber": 159,
+    "playerFirstName": "Tyler",
+    "playerLastName": "Cook",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-01-30",
+    "puzzleNumber": 160,
+    "playerFirstName": "Xavier",
+    "playerLastName": "Munford",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-01-31",
+    "puzzleNumber": 161,
+    "playerFirstName": "Saddiq",
+    "playerLastName": "Bey",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-02-01",
+    "puzzleNumber": 162,
+    "playerFirstName": "James",
+    "playerLastName": "Bailey",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-02-02",
+    "puzzleNumber": 163,
+    "playerFirstName": "Michael",
+    "playerLastName": "Cage",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-02-03",
+    "puzzleNumber": 164,
+    "playerFirstName": "Lorenzo",
+    "playerLastName": "Williams",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-02-04",
+    "puzzleNumber": 165,
+    "playerFirstName": "John",
+    "playerLastName": "Schweitz",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-02-05",
+    "puzzleNumber": 166,
+    "playerFirstName": "Danny",
+    "playerLastName": "Manning",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-02-06",
+    "puzzleNumber": 167,
+    "playerFirstName": "DJ",
+    "playerLastName": "Mbenga",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-02-07",
+    "puzzleNumber": 168,
+    "playerFirstName": "Maurice",
+    "playerLastName": "Harkless",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-02-08",
+    "puzzleNumber": 169,
+    "playerFirstName": "Dennis",
+    "playerLastName": "Hopson",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-02-09",
+    "puzzleNumber": 170,
+    "playerFirstName": "Ron",
+    "playerLastName": "Davis",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-02-10",
+    "puzzleNumber": 171,
+    "playerFirstName": "Jelani",
+    "playerLastName": "McCoy",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-02-11",
+    "puzzleNumber": 172,
+    "playerFirstName": "Marvin",
+    "playerLastName": "Williams",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-02-12",
+    "puzzleNumber": 173,
+    "playerFirstName": "Charles",
+    "playerLastName": "Smith",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-02-13",
+    "puzzleNumber": 174,
+    "playerFirstName": "Chris",
+    "playerLastName": "Morris",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-02-14",
+    "puzzleNumber": 175,
+    "playerFirstName": "Matt",
+    "playerLastName": "Carroll",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-02-15",
+    "puzzleNumber": 176,
+    "playerFirstName": "Charles",
+    "playerLastName": "Smith",
+    "difficulty": "medium"
+  },
+  {
+    "date": "2027-02-16",
+    "puzzleNumber": 177,
+    "playerFirstName": "Tim",
+    "playerLastName": "Hardaway Jr.",
+    "difficulty": "expert"
+  },
+  {
+    "date": "2027-02-17",
+    "puzzleNumber": 178,
+    "playerFirstName": "Jeremiah",
+    "playerLastName": "Martin",
+    "difficulty": "easy"
+  },
+  {
+    "date": "2027-02-18",
+    "puzzleNumber": 179,
+    "playerFirstName": "Corey",
+    "playerLastName": "Gaines",
+    "difficulty": "hard"
+  },
+  {
+    "date": "2027-02-19",
+    "puzzleNumber": 180,
+    "playerFirstName": "Kay",
+    "playerLastName": "Felder",
+    "difficulty": "medium"
+  }
+]

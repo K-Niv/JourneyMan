@@ -38,7 +38,6 @@ export function usePuzzleLoader() {
   const error = useGameStore((s) => s.error);
   const puzzleDate = useGameStore((s) => s.puzzleDate);
   const puzzleId = useGameStore((s) => s.puzzleId);
-  const gameStatus = useGameStore((s) => s.gameStatus);
   const resetGame = useGameStore((s) => s.resetGame);
   const loadPuzzle = useGameStore((s) => s.loadPuzzle);
   const ensureAnonymousId = useAuthStore((s) => s.ensureAnonymousId);

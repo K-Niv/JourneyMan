@@ -81,21 +81,13 @@ async function request(path, options = {}) {
 
 /**
  * Read identity headers from the persisted auth store.
- * Uses Zustand's `getState()` so this works outside React components.
+ * Delegates to the store's own `getHeaders()` so there is a single source
+ * of truth — when PR 09 adds new auth headers, only authStore needs updating.
  *
  * @returns {Record<string, string>}
  */
 function getIdentityHeaders() {
-  const { anonymousId, token } = useAuthStore.getState();
-
-  const headers = {};
-  if (anonymousId) {
-    headers['X-Anonymous-Id'] = anonymousId;
-  }
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  return headers;
+  return useAuthStore.getState().getHeaders();
 }
 
 // ---------------------------------------------------------------------------

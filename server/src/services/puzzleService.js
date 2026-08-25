@@ -181,16 +181,14 @@ export async function submitGuess(guess, anonymousId) {
   const previousGuesses = result ? (result.guesses) : [];
   const previousFeedback = result ? (result.feedback) : [];
 
-  // Guard: game already completed
-  if (result && (result.won || previousGuesses.length >= puzzle.maxAttempts)) {
+  // Guard: game already won
+  if (result && result.won) {
     const err = new Error('This puzzle is already completed for today.');
     err.statusCode = 409;
     throw err;
   }
 
-  // Guard: attempt limit exceeded (shouldn't normally reach here, but safety net)
-  // Use puzzle.maxAttempts as the single source of truth — consistent with the
-  // completed-check above and the gameOver calculation below.
+  // Guard: attempt limit exhausted
   if (previousGuesses.length >= puzzle.maxAttempts) {
     const err = new Error(`Maximum attempts (${puzzle.maxAttempts}) reached.`);
     err.statusCode = 409;

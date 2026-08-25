@@ -34,7 +34,12 @@ app.use((_req, res) => {
 app.use((err, _req, res, _next) => {
   // body-parser sets err.status; custom errors use err.statusCode
   const status = err.statusCode ?? err.status ?? 500;
-  res.status(status).json({ error: err.message ?? 'Internal server error.' });
+  // Only expose error details for client errors (4xx).
+  // 5xx messages may leak internal details (Prisma, Express internals).
+  const message = status < 500
+    ? (err.message ?? 'Bad request.')
+    : 'Internal server error.';
+  res.status(status).json({ error: message });
 });
 
 export default app;

@@ -32,7 +32,8 @@ app.use((_req, res) => {
 // ---------------------------------------------------------------------------
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
-  const status = err.statusCode ?? 500;
+  // body-parser sets err.status; custom errors use err.statusCode
+  const status = err.statusCode ?? err.status ?? 500;
   res.status(status).json({ error: err.message ?? 'Internal server error.' });
 });
 

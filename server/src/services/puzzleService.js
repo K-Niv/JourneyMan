@@ -16,7 +16,6 @@
 import prisma from '../lib/prisma.js';
 import { gradeGuess, isWin } from '../domain/grading.js';
 import { validateGuess } from '../domain/validation.js';
-import { MAX_ATTEMPTS } from 'shared';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -190,8 +189,10 @@ export async function submitGuess(guess, anonymousId) {
   }
 
   // Guard: attempt limit exceeded (shouldn't normally reach here, but safety net)
-  if (previousGuesses.length >= MAX_ATTEMPTS) {
-    const err = new Error(`Maximum attempts (${MAX_ATTEMPTS}) reached.`);
+  // Use puzzle.maxAttempts as the single source of truth — consistent with the
+  // completed-check above and the gameOver calculation below.
+  if (previousGuesses.length >= puzzle.maxAttempts) {
+    const err = new Error(`Maximum attempts (${puzzle.maxAttempts}) reached.`);
     err.statusCode = 409;
     throw err;
   }
@@ -215,7 +216,6 @@ export async function submitGuess(guess, anonymousId) {
           attempts: attemptNumber,
           guesses: updatedGuesses,
           feedback: updatedFeedback,
-          ...(gameOver ? { completedAt: new Date() } : {}),
         },
       });
     } else {

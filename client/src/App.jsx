@@ -3,27 +3,21 @@
  * ===================
  * Root application component.
  *
- * PR 05: Wires up the Zustand stores and puzzle loader hook, rendering a
- * temporary debug view that proves the state pipeline works end-to-end.
- * PR 06 will replace this with the actual game board UI.
+ * PR 06: Full game board UI with header, player info card, guess grid,
+ * drag-and-drop team reordering, locked green slots, and team selector.
  */
 
 import React from 'react';
 import { usePuzzleLoader } from './hooks/usePuzzleLoader.js';
 import { useGameStore } from './stores/gameStore.js';
-import { useAuthStore } from './stores/authStore.js';
-import { MAX_ATTEMPTS, DIFFICULTY } from 'shared';
+import { MAX_ATTEMPTS, FEEDBACK } from 'shared';
 
-// ---------------------------------------------------------------------------
-// Difficulty badge config
-// ---------------------------------------------------------------------------
-
-const DIFFICULTY_META = {
-  [DIFFICULTY.EASY]: { emoji: '🟢', label: 'Easy', color: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' },
-  [DIFFICULTY.MEDIUM]: { emoji: '🟡', label: 'Medium', color: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20' },
-  [DIFFICULTY.HARD]: { emoji: '🔴', label: 'Hard', color: 'text-red-400 bg-red-400/10 border-red-400/20' },
-  [DIFFICULTY.EXPERT]: { emoji: '💀', label: 'Expert', color: 'text-purple-400 bg-purple-400/10 border-purple-400/20' },
-};
+// Components
+import Header from '@/components/Header';
+import PlayerInfo from '@/components/PlayerInfo';
+import GuessGrid from '@/components/GuessGrid';
+import { Button } from '@/components/ui/button';
+import { Eraser, Send, Loader2 } from 'lucide-react';
 
 export default function App() {
   const { isLoading, error } = usePuzzleLoader();
@@ -38,137 +32,140 @@ export default function App() {
   const availableTeams = useGameStore((s) => s.availableTeams);
   const gameStatus = useGameStore((s) => s.gameStatus);
   const guesses = useGameStore((s) => s.guesses);
+  const feedback = useGameStore((s) => s.feedback);
+  const currentGuess = useGameStore((s) => s.currentGuess);
+  const maxAttempts = useGameStore((s) => s.maxAttempts);
+  const isSubmitting = useGameStore((s) => s.isSubmitting);
 
-  // Auth state
-  const anonymousId = useAuthStore((s) => s.anonymousId);
+  // Actions
+  const setSlot = useGameStore((s) => s.setSlot);
+  const swapSlots = useGameStore((s) => s.swapSlots);
+  const clearCurrentGuess = useGameStore((s) => s.clearCurrentGuess);
+  const submitGuess = useGameStore((s) => s.submitGuess);
 
-  const diffMeta = DIFFICULTY_META[difficulty] ?? {};
+  // Derived state
+  const allSlotsFilled = currentGuess.length > 0 && currentGuess.every((t) => t !== null);
+  
+  // Can clear if there are any filled slots that aren't locked
+  const lastFeedback = feedback.length > 0 ? feedback[feedback.length - 1] : null;
+  const hasClearableSlot = currentGuess.some((t, idx) => {
+    if (!t) return false;
+    if (lastFeedback && lastFeedback[idx] === FEEDBACK.CORRECT) return false;
+    return true;
+  });
+
+  const isPlaying = gameStatus === 'playing';
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-950 text-slate-100">
+    <div className="min-h-screen flex flex-col items-center bg-background text-foreground">
       {/* Header */}
-      <header className="text-center mb-8">
-        <div className="inline-flex items-center justify-center space-x-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
-          <span>🏀 NBA Career Timeline Puzzle</span>
-        </div>
-        <h1 className="text-5xl font-extrabold tracking-tight font-display bg-gradient-to-r from-amber-400 via-orange-400 to-red-500 bg-clip-text text-transparent">
-          JourneyMan
-        </h1>
-      </header>
+      <Header puzzleNumber={puzzleNumber} puzzleDate={puzzleDate} />
 
       {/* Main content */}
-      <main className="w-full max-w-md space-y-4">
-        {/* Loading state */}
-        {isLoading && (
-          <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-6 shadow-2xl text-center">
-            <div className="animate-pulse text-slate-400">Loading today's puzzle…</div>
+      <main className="w-full max-w-lg mx-auto px-4 pb-8 flex-1 flex flex-col gap-4">
+        {/* Initial loading state (only before puzzleId is known) */}
+        {isLoading && !puzzleId && (
+          <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-2xl text-center mt-8">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-muted-foreground">Loading today's puzzle…</p>
+            </div>
           </div>
         )}
 
         {/* Error state */}
-        {error && !isLoading && (
-          <div className="bg-red-950/50 border border-red-500/20 rounded-2xl p-6 shadow-2xl">
-            <p className="text-xs text-red-400 font-medium uppercase tracking-wider mb-1">Error</p>
+        {error && !puzzleId && (
+          <div className="bg-red-950/50 border border-red-500/20 rounded-2xl p-6 shadow-2xl mt-8">
+            <p className="text-xs text-red-400 font-medium uppercase tracking-wider mb-1">
+              Notice
+            </p>
             <p className="text-sm text-red-300">{error}</p>
           </div>
         )}
 
-        {/* Puzzle loaded — debug view */}
-        {puzzleId && !isLoading && (
+        {/* Game loaded */}
+        {puzzleId && (
           <>
-            {/* Player card */}
-            <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-6 shadow-2xl">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-                    Puzzle #{puzzleNumber} · {puzzleDate}
-                  </p>
-                  <h2 className="text-2xl font-bold text-slate-100 mt-1">
-                    {player?.name ?? 'Unknown Player'}
-                  </h2>
-                </div>
-                {difficulty && (
-                  <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${diffMeta.color}`}>
-                    <span>{diffMeta.emoji}</span>
-                    <span>{diffMeta.label}</span>
-                  </span>
-                )}
-              </div>
+            {/* Player info card */}
+            <PlayerInfo
+              player={player}
+              difficulty={difficulty}
+              stintCount={stintCount}
+              guessesUsed={guesses.length}
+              maxAttempts={maxAttempts ?? MAX_ATTEMPTS}
+            />
 
-              {/* Player image */}
-              {player?.imageUrl && (
-                <div className="flex justify-center mb-4">
-                  <img
-                    src={player.imageUrl}
-                    alt={player.name}
-                    className="w-24 h-24 rounded-xl object-cover border-2 border-slate-700 shadow-lg"
-                  />
-                </div>
-              )}
-
-              {/* Stats row */}
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div className="bg-slate-950 rounded-xl p-3 border border-slate-800">
-                  <p className="text-lg font-bold text-amber-400">{stintCount}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider">Stints</p>
-                </div>
-                <div className="bg-slate-950 rounded-xl p-3 border border-slate-800">
-                  <p className="text-lg font-bold text-amber-400">{MAX_ATTEMPTS}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider">Max Guesses</p>
-                </div>
-                <div className="bg-slate-950 rounded-xl p-3 border border-slate-800">
-                  <p className="text-lg font-bold text-amber-400">{guesses.length}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider">Attempted</p>
-                </div>
-              </div>
+            {/* Guess grid */}
+            <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl">
+              <GuessGrid
+                guesses={guesses}
+                feedback={feedback}
+                currentGuess={currentGuess}
+                stintCount={stintCount}
+                gameStatus={gameStatus}
+                availableTeams={availableTeams}
+                onSelectTeam={setSlot}
+                onSwap={swapSlots}
+              />
             </div>
 
-            {/* Available teams */}
-            <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-6 shadow-2xl">
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mb-3">
-                Available Teams ({availableTeams.length})
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {availableTeams.map((team) => (
-                  <span
-                    key={team.id}
-                    className="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700"
-                  >
-                    {team.abbreviation}
-                  </span>
-                ))}
+            {/* Action buttons */}
+            {isPlaying && (
+              <div className="flex items-center gap-3">
+                <Button
+                  id="clear-guess-button"
+                  variant="outline"
+                  className="flex-1 border-slate-700 text-slate-400 hover:text-foreground hover:bg-slate-800"
+                  onClick={clearCurrentGuess}
+                  disabled={!hasClearableSlot || isSubmitting}
+                >
+                  <Eraser className="w-4 h-4 mr-2" />
+                  Clear
+                </Button>
+                <Button
+                  id="submit-guess-button"
+                  className="flex-1 bg-amber-500 text-slate-950 hover:bg-amber-400 font-semibold"
+                  onClick={submitGuess}
+                  disabled={!allSlotsFilled || isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Checking…
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Submit Guess
+                    </>
+                  )}
+                </Button>
               </div>
-            </div>
+            )}
 
-            {/* Game status */}
-            <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-6 shadow-2xl">
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mb-3">
-                Debug Info
-              </p>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Game Status</span>
-                  <span className="font-mono text-slate-200">{gameStatus}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Anonymous ID</span>
-                  <span className="font-mono text-slate-200 text-[10px] truncate max-w-[180px]">
-                    {anonymousId ?? 'none'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Puzzle ID</span>
-                  <span className="font-mono text-slate-200 text-[10px] truncate max-w-[180px]">
-                    {puzzleId}
-                  </span>
-                </div>
+            {/* Game over states (placeholder for PR08) */}
+            {gameStatus === 'won' && (
+              <div className="bg-emerald-950/50 border border-emerald-500/20 rounded-2xl p-6 text-center shadow-2xl">
+                <p className="text-2xl mb-2">🎉</p>
+                <p className="text-lg font-bold text-emerald-400">Correct!</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  You solved it in {guesses.length} {guesses.length === 1 ? 'guess' : 'guesses'}!
+                </p>
               </div>
-            </div>
+            )}
+
+            {gameStatus === 'lost' && (
+              <div className="bg-red-950/50 border border-red-500/20 rounded-2xl p-6 text-center shadow-2xl">
+                <p className="text-2xl mb-2">😔</p>
+                <p className="text-lg font-bold text-red-400">Game Over</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Better luck tomorrow!
+                </p>
+              </div>
+            )}
           </>
         )}
       </main>
-
-
     </div>
   );
 }

@@ -48,12 +48,17 @@ export function usePuzzleLoader() {
 
     // Step 2: Check date staleness
     const today = todayUTC();
+    const availableTeams = useGameStore.getState().availableTeams;
     const isStale = puzzleDate !== today;
     const isEmpty = !puzzleId;
+    const hasIncompleteTeams = !availableTeams || availableTeams.length < 30;
 
     if (isStale || isEmpty) {
       // Date changed or no puzzle loaded — reset and fetch fresh data
       resetGame();
+      loadPuzzle();
+    } else if (hasIncompleteTeams) {
+      // Refresh puzzle data to get all 30 teams without losing current game progress
       loadPuzzle();
     }
     // If dates match and game is active, the persisted state is already valid.

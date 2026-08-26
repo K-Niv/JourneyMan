@@ -24,13 +24,35 @@ import { useAuthStore } from '../stores/authStore.js';
  * Carries the HTTP status and parsed response body so callers can
  * branch on status (e.g. 404 vs 409 vs 500).
  */
+/**
+ * Map status codes to user-friendly fallback messages.
+ * Used when the server response doesn't contain a meaningful error string.
+ */
+const USER_FRIENDLY_ERRORS = {
+  400: 'Something was wrong with that request. Please try again.',
+  404: "Today's puzzle isn't available yet. Please check back later.",
+  409: 'This action has already been completed.',
+  429: 'Too many requests. Please wait a moment and try again.',
+  500: 'Something went wrong on our end. Please try again later.',
+  502: 'The server is temporarily unavailable. Please try again later.',
+  503: 'The server is temporarily unavailable. Please try again later.',
+};
+
 export class ApiError extends Error {
   /**
    * @param {number} status  - HTTP status code
    * @param {object} body    - Parsed JSON response body
    */
   constructor(status, body) {
-    super(body?.error ?? `API request failed with status ${status}`);
+    // Use the server's error message for 4xx (actionable), but fall back
+    // to a generic user-friendly message for 5xx or missing body.
+    const serverMsg = body?.error;
+    const friendlyMsg = USER_FRIENDLY_ERRORS[status]
+      ?? 'Something went wrong. Please try again later.';
+    // For 5xx, always use the friendly message (server already sanitises,
+    // but this is a safety net on the client side too).
+    const displayMsg = (status >= 500 || !serverMsg) ? friendlyMsg : serverMsg;
+    super(displayMsg);
     this.name = 'ApiError';
     this.status = status;
     this.body = body;

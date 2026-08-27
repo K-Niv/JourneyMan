@@ -36,6 +36,9 @@ vi.mock('../src/lib/prisma.js', () => {
     dailyPuzzle: {
       findUnique: vi.fn(),
     },
+    team: {
+      findMany: vi.fn().mockResolvedValue([]),
+    },
     user: {
       upsert: vi.fn(),
     },

@@ -34,7 +34,12 @@ export async function getToday(req, res) {
     return res.status(200).json(payload);
   } catch (err) {
     const status = err.statusCode ?? 500;
-    return res.status(status).json({ error: err.message });
+    // Only expose error details for client errors (4xx).
+    // 5xx messages may leak internal details (Prisma, Express internals).
+    const message = status < 500
+      ? err.message
+      : 'Internal server error.';
+    return res.status(status).json({ error: message });
   }
 }
 
@@ -62,6 +67,9 @@ export async function postGuess(req, res) {
       return res.status(400).json({ error: err.message });
     }
     const status = err.statusCode ?? 500;
-    return res.status(status).json({ error: err.message });
+    const message = status < 500
+      ? err.message
+      : 'Internal server error.';
+    return res.status(status).json({ error: message });
   }
 }

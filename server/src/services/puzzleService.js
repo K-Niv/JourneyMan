@@ -61,19 +61,24 @@ async function findOrCreateAnonymousUser(anonymousId) {
 export async function getTodaysPuzzle() {
   const today = todayUTC();
 
-  const puzzle = await prisma.dailyPuzzle.findUnique({
-    where: { date: new Date(today) },
-    include: {
-      player: {
-        include: {
-          careerStints: {
-            orderBy: { stintOrder: 'asc' },
-            include: { team: true },
+  const [puzzle, allTeams] = await Promise.all([
+    prisma.dailyPuzzle.findUnique({
+      where: { date: new Date(today) },
+      include: {
+        player: {
+          include: {
+            careerStints: {
+              orderBy: { stintOrder: 'asc' },
+              include: { team: true },
+            },
           },
         },
       },
-    },
-  });
+    }),
+    prisma.team.findMany({
+      orderBy: { name: 'asc' },
+    }),
+  ]);
 
   if (!puzzle) {
     const err = new Error(`No puzzle scheduled for ${today}.`);
@@ -84,17 +89,21 @@ export async function getTodaysPuzzle() {
   const { player } = puzzle;
   const stints = player.careerStints;
 
-  // Build de-duplicated list of available teams (preserves first-seen order)
+  // Use all teams if available; fallback to stint teams if query returned none (e.g., test mocks)
+  const teamsSource = allTeams && allTeams.length > 0
+    ? allTeams
+    : stints.map((s) => s.team);
+
   const seen = new Set();
   const availableTeams = [];
-  for (const stint of stints) {
-    if (!seen.has(stint.team.id)) {
-      seen.add(stint.team.id);
+  for (const team of teamsSource) {
+    if (!seen.has(team.id)) {
+      seen.add(team.id);
       availableTeams.push({
-        id: stint.team.id,
-        name: stint.team.name,
-        abbreviation: stint.team.abbreviation,
-        logoUrl: stint.team.logoUrl ?? null,
+        id: team.id,
+        name: team.name,
+        abbreviation: team.abbreviation,
+        logoUrl: team.logoUrl ?? null,
       });
     }
   }

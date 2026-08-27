@@ -45,6 +45,7 @@ const initialGameState = {
   isLoading: false, // For initial puzzle fetch
   isSubmitting: false, // For guess submission
   error: null,
+  lastSubmittedRowIndex: null, // Tracks row index of the newly submitted guess for animation
 };
 
 // ---------------------------------------------------------------------------
@@ -234,6 +235,7 @@ export const useGameStore = create(
               : [...data.guess],
             isSubmitting: false,
             error: null,
+            lastSubmittedRowIndex: updatedGuesses.length - 1,
           });
         } catch (err) {
           const message = err.name === 'ApiError'
@@ -244,6 +246,13 @@ export const useGameStore = create(
             error: message,
           });
         }
+      },
+
+      /**
+       * Clear the animated row pointer once the reveal animation is complete.
+       */
+      clearLastSubmittedRowIndex: () => {
+        set({ lastSubmittedRowIndex: null });
       },
 
       // ---------------------------------------------------------------------

@@ -58,7 +58,7 @@ async function findOrCreateAnonymousUser(anonymousId) {
  * @returns {Promise<object>} Public puzzle payload
  * @throws  If no puzzle is scheduled for today
  */
-export async function getTodaysPuzzle() {
+export async function getTodaysPuzzle(anonymousId = null, authenticatedUserId = null) {
   const today = todayUTC();
 
   const [puzzle, allTeams] = await Promise.all([
@@ -108,7 +108,48 @@ export async function getTodaysPuzzle() {
     }
   }
 
-  return {
+  // Resolve user identity to check for existing progress
+  let userId = authenticatedUserId;
+  if (!userId && anonymousId) {
+    const anon = await prisma.user.findUnique({ where: { anonymousId } });
+    if (anon) {
+      userId = anon.id;
+    }
+  }
+
+  let userResult = null;
+  if (userId) {
+    const result = await prisma.dailyResult.findUnique({
+      where: { userId_puzzleId: { userId, puzzleId: puzzle.id } },
+    });
+
+    if (result) {
+      const won = result.won;
+      const attempts = result.attempts;
+      const gameOver = won || attempts >= puzzle.maxAttempts;
+
+      userResult = {
+        won,
+        gameOver,
+        attempts,
+        guesses: result.guesses,
+        feedback: result.feedback,
+      };
+
+      if (gameOver) {
+        userResult.answer = stints.map((s) => ({
+          stintOrder: s.stintOrder,
+          teamId: s.team.id,
+          teamName: s.team.name,
+          abbreviation: s.team.abbreviation,
+          startYear: s.startYear,
+          endYear: s.endYear,
+        }));
+      }
+    }
+  }
+
+  const payload = {
     puzzleId: puzzle.id,
     puzzleNumber: puzzle.puzzleNumber,
     date: today,
@@ -122,6 +163,12 @@ export async function getTodaysPuzzle() {
     stintCount: stints.length,
     availableTeams,
   };
+
+  if (userResult) {
+    payload.userResult = userResult;
+  }
+
+  return payload;
 }
 
 // ---------------------------------------------------------------------------
@@ -142,9 +189,10 @@ export async function getTodaysPuzzle() {
  *
  * @param {string[]}      guess        - Array of team IDs submitted by the client
  * @param {string | null} anonymousId  - Value from X-Anonymous-Id header (or null)
+ * @param {string | null} [authenticatedUserId=null] - Authenticated user ID (or null)
  * @returns {Promise<object>}          - Graded response payload
  */
-export async function submitGuess(guess, anonymousId) {
+export async function submitGuess(guess, anonymousId, authenticatedUserId = null) {
   const today = todayUTC();
 
   // 1. Load puzzle + ordered stints (the answer)
@@ -173,9 +221,9 @@ export async function submitGuess(guess, anonymousId) {
   // 2. Validate the submitted guess
   validateGuess(guess, answer.length); // throws ValidationError on bad input
 
-  // 3. Resolve user identity
-  let userId = null;
-  if (anonymousId) {
+  // 3. Resolve user identity: authenticated userId takes precedence
+  let userId = authenticatedUserId;
+  if (!userId && anonymousId) {
     const user = await findOrCreateAnonymousUser(anonymousId);
     userId = user.id;
   }

@@ -63,10 +63,11 @@ export const useGameStore = create(
 
       /**
        * Fetch today's puzzle and populate the store.
-       * Sets gameStatus to 'playing' on success.
-       * No-ops if already loading.
+       * Synchronises with userResult if returned by the server.
+       *
+       * @param {{ forceSync?: boolean }} [options]
        */
-      loadPuzzle: async () => {
+      loadPuzzle: async (options = {}) => {
         if (get().isLoading) return;
 
         set({ isLoading: true, error: null });
@@ -74,7 +75,34 @@ export const useGameStore = create(
         try {
           const data = await fetchTodaysPuzzle();
           const state = get();
-          const isExistingGame = state.puzzleId === data.puzzleId && state.currentGuess?.length === data.stintCount;
+          const isSamePuzzle = state.puzzleId === data.puzzleId && state.currentGuess?.length === data.stintCount;
+
+          let guesses = isSamePuzzle && !options.forceSync ? state.guesses : [];
+          let feedback = isSamePuzzle && !options.forceSync ? state.feedback : [];
+          let gameStatus = isSamePuzzle && !options.forceSync ? state.gameStatus : 'playing';
+          let answer = isSamePuzzle && !options.forceSync ? state.answer : null;
+          let currentGuess = isSamePuzzle && !options.forceSync ? state.currentGuess : new Array(data.stintCount).fill(null);
+
+          // If the server has a saved result for this user/session, synchronise it!
+          if (data.userResult) {
+            guesses = data.userResult.guesses || [];
+            feedback = data.userResult.feedback || [];
+            if (data.userResult.won) {
+              gameStatus = 'won';
+            } else if (data.userResult.gameOver) {
+              gameStatus = 'lost';
+            } else {
+              gameStatus = 'playing';
+            }
+            answer = data.userResult.answer ?? (gameStatus !== 'playing' ? data.answer ?? null : null);
+
+            // Populate currentGuess for active row
+            if (gameStatus === 'playing' && guesses.length > 0) {
+              currentGuess = [...guesses[guesses.length - 1]];
+            } else if (gameStatus === 'playing') {
+              currentGuess = new Array(data.stintCount).fill(null);
+            }
+          }
 
           set({
             puzzleId: data.puzzleId,
@@ -85,9 +113,11 @@ export const useGameStore = create(
             player: data.player,
             stintCount: data.stintCount,
             availableTeams: data.availableTeams,
-            // Initialise empty guess slots only if not an existing game for today
-            currentGuess: isExistingGame ? state.currentGuess : new Array(data.stintCount).fill(null),
-            gameStatus: isExistingGame ? state.gameStatus : 'playing',
+            currentGuess,
+            guesses,
+            feedback,
+            gameStatus,
+            answer,
             isLoading: false,
             error: null,
           });

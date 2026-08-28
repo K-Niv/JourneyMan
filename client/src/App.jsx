@@ -18,6 +18,7 @@ import Header from '@/components/Header';
 import PlayerInfo from '@/components/PlayerInfo';
 import GuessGrid from '@/components/GuessGrid';
 import GameOverModal from '@/components/GameOverModal';
+import ToastContainer from '@/components/ui/ToastContainer';
 import { Button } from '@/components/ui/button';
 import { Eraser, Send, Loader2, Trophy } from 'lucide-react';
 
@@ -222,6 +223,9 @@ export default function App() {
           </>
         )}
       </main>
+
+      {/* Global Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 }

@@ -29,8 +29,11 @@ import { ValidationError } from '../domain/validation.js';
  * @type {import('express').RequestHandler}
  */
 export async function getToday(req, res) {
+  const anonymousId = req.anonymousId ?? null;
+  const userId = req.userId ?? null;
+
   try {
-    const payload = await getTodaysPuzzle();
+    const payload = await getTodaysPuzzle(anonymousId, userId);
     return res.status(200).json(payload);
   } catch (err) {
     const status = err.statusCode ?? 500;
@@ -58,9 +61,10 @@ export async function getToday(req, res) {
 export async function postGuess(req, res) {
   const { guess } = req.body ?? {};
   const anonymousId = req.anonymousId ?? null;
+  const userId = req.userId ?? null;
 
   try {
-    const payload = await submitGuess(guess, anonymousId);
+    const payload = await submitGuess(guess, anonymousId, userId);
     return res.status(200).json(payload);
   } catch (err) {
     if (err instanceof ValidationError) {

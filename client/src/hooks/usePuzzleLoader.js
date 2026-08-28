@@ -41,10 +41,12 @@ export function usePuzzleLoader() {
   const resetGame = useGameStore((s) => s.resetGame);
   const loadPuzzle = useGameStore((s) => s.loadPuzzle);
   const ensureAnonymousId = useAuthStore((s) => s.ensureAnonymousId);
+  const loadProfile = useAuthStore((s) => s.loadProfile);
 
   useEffect(() => {
-    // Step 1: Ensure anonymous identity exists
+    // Step 1: Ensure anonymous identity exists & validate authenticated token
     ensureAnonymousId();
+    loadProfile();
 
     // Step 2: Check date staleness
     const today = todayUTC();

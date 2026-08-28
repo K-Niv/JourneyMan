@@ -12,6 +12,7 @@
 import React from 'react';
 import SlotTile from './SlotTile';
 import { FEEDBACK } from 'shared';
+import { cn } from '@/lib/utils';
 
 export default function GuessRow({
   stintCount,
@@ -20,22 +21,33 @@ export default function GuessRow({
   currentGuess,
   lastFeedback,
   isActive,
+  isRevealing,
   availableTeams,
   onSelectTeam,
   onSwap,
   rowNumber,
 }) {
+  const gapClass =
+    stintCount <= 4
+      ? 'gap-2 sm:gap-3'
+      : stintCount <= 6
+      ? 'gap-1.5 sm:gap-2'
+      : 'gap-1 sm:gap-1.5';
+
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
       {/* Row number indicator */}
-      <div className="w-6 shrink-0 text-center">
-        <span className="text-xs font-mono text-muted-foreground">
+      <div className="w-5 sm:w-6 shrink-0 text-center">
+        <span className="text-[11px] sm:text-xs font-mono text-muted-foreground">
           {rowNumber}
         </span>
       </div>
 
       {/* Slot tiles */}
-      <div className="flex-1 grid gap-2 sm:gap-3" style={{ gridTemplateColumns: `repeat(${stintCount}, 1fr)` }}>
+      <div
+        className={cn('flex-1 grid min-w-0', gapClass)}
+        style={{ gridTemplateColumns: `repeat(${stintCount}, minmax(0, 1fr))` }}
+      >
         {Array.from({ length: stintCount }, (_, i) => {
           // Past guess row
           if (guess && feedback) {
@@ -43,11 +55,13 @@ export default function GuessRow({
               <SlotTile
                 key={i}
                 index={i}
+                stintCount={stintCount}
                 teamId={guess[i]}
                 feedback={feedback[i]}
                 isLocked={false}
                 availableTeams={availableTeams}
                 isActive={false}
+                isRevealing={isRevealing}
               />
             );
           }
@@ -59,6 +73,7 @@ export default function GuessRow({
               <SlotTile
                 key={i}
                 index={i}
+                stintCount={stintCount}
                 teamId={currentGuess[i]}
                 feedback={null}
                 isLocked={isLocked}
@@ -75,6 +90,7 @@ export default function GuessRow({
             <SlotTile
               key={i}
               index={i}
+              stintCount={stintCount}
               teamId={null}
               feedback={null}
               isLocked={false}

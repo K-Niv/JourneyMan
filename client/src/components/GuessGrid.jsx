@@ -11,6 +11,7 @@
 
 import React from 'react';
 import GuessRow from './GuessRow';
+import { useGameStore } from '@/stores/gameStore';
 import { MAX_ATTEMPTS } from 'shared';
 
 export default function GuessGrid({
@@ -23,12 +24,14 @@ export default function GuessGrid({
   onSelectTeam,
   onSwap,
 }) {
+  const lastSubmittedRowIndex = useGameStore((s) => s.lastSubmittedRowIndex);
   const rows = [];
   const lastFeedback = feedback.length > 0 ? feedback[feedback.length - 1] : null;
 
   for (let i = 0; i < MAX_ATTEMPTS; i++) {
     const isPastGuess = i < guesses.length;
     const isActiveRow = i === guesses.length && gameStatus === 'playing';
+    const isRevealing = isPastGuess && i === lastSubmittedRowIndex;
 
     rows.push(
       <GuessRow
@@ -40,6 +43,7 @@ export default function GuessGrid({
         currentGuess={isActiveRow ? currentGuess : null}
         lastFeedback={isActiveRow ? lastFeedback : null}
         isActive={isActiveRow}
+        isRevealing={isRevealing}
         availableTeams={availableTeams}
         onSelectTeam={onSelectTeam}
         onSwap={onSwap}

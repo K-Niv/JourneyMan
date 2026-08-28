@@ -15,12 +15,14 @@
 
 import { Router } from 'express';
 import { anonymousUser } from '../middleware/anonymousUser.js';
+import { optionalAuth } from '../middleware/auth.js';
 import { getToday, postGuess } from '../controllers/puzzleController.js';
 
 const router = Router();
 
-// Apply anonymous-user resolution to all puzzle routes
+// Apply anonymous-user and optional JWT auth resolution to all puzzle routes
 router.use(anonymousUser);
+router.use(optionalAuth);
 
 router.get('/today', getToday);
 router.post('/guess', postGuess);

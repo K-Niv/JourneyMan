@@ -26,6 +26,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import app from '../src/app.js';
 
 // ---------------------------------------------------------------------------
@@ -194,6 +195,66 @@ describe('GET /api/puzzle/today', () => {
     expect(res.body.availableTeams).toHaveLength(3);
     const abbrevs = res.body.availableTeams.map((t) => t.abbreviation);
     expect(abbrevs).toEqual(['CLE', 'MIA', 'LAL']);
+  });
+
+  it('200: returns userResult when user has existing progress', async () => {
+    mockPuzzleFound();
+    const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
+    const token = jwt.sign({ userId: 'user-auth-789', email: 'registered@example.com' }, JWT_SECRET);
+
+    prisma.dailyResult.findUnique.mockResolvedValue({
+      id: 'result-001',
+      userId: 'user-auth-789',
+      puzzleId: 'puzzle-001',
+      won: false,
+      attempts: 1,
+      guesses: [WRONG_GUESS],
+      feedback: [['incorrect', 'incorrect']],
+    });
+
+    const res = await request(app)
+      .get('/api/puzzle/today')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('userResult');
+    expect(res.body.userResult).toMatchObject({
+      won: false,
+      gameOver: false,
+      attempts: 1,
+      guesses: [WRONG_GUESS],
+      feedback: [['incorrect', 'incorrect']],
+    });
+    expect(res.body.userResult).not.toHaveProperty('answer');
+  });
+
+  it('200: reveals answer in userResult when user has completed the game', async () => {
+    mockPuzzleFound();
+    const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
+    const token = jwt.sign({ userId: 'user-auth-789', email: 'registered@example.com' }, JWT_SECRET);
+
+    prisma.dailyResult.findUnique.mockResolvedValue({
+      id: 'result-001',
+      userId: 'user-auth-789',
+      puzzleId: 'puzzle-001',
+      won: true,
+      attempts: 2,
+      guesses: [WRONG_GUESS, CORRECT_GUESS],
+      feedback: [['incorrect', 'incorrect'], ['correct', 'correct']],
+    });
+
+    const res = await request(app)
+      .get('/api/puzzle/today')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.userResult).toMatchObject({
+      won: true,
+      gameOver: true,
+      attempts: 2,
+    });
+    expect(res.body.userResult).toHaveProperty('answer');
+    expect(res.body.userResult.answer).toHaveLength(2);
   });
 
   it('404: returns error when no puzzle is scheduled today', async () => {
@@ -534,6 +595,58 @@ describe('X-Anonymous-Id middleware', () => {
       .send({ guess: WRONG_GUESS });
 
     expect(prisma.user.upsert).not.toHaveBeenCalled();
+  });
+});
+
+// ===========================================================================
+// Middleware: optionalAuth / Authenticated Guess Submissions
+// ===========================================================================
+describe('Authenticated Guess Submissions (JWT)', () => {
+  const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
+  const token = jwt.sign({ userId: 'user-auth-789', email: 'registered@example.com' }, JWT_SECRET);
+
+  it('200: persists guess under authenticated userId without calling upsert', async () => {
+    mockPuzzleFound();
+    mockNoExistingResult();
+
+    const res = await request(app)
+      .post('/api/puzzle/guess')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ guess: WRONG_GUESS });
+
+    expect(res.status).toBe(200);
+    // Should NOT call upsert for anonymous user
+    expect(prisma.user.upsert).not.toHaveBeenCalled();
+    // Should create DailyResult with userId = user-auth-789
+    expect(prisma.dailyResult.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          userId: 'user-auth-789',
+          puzzleId: 'puzzle-001',
+        }),
+      })
+    );
+  });
+
+  it('200: Authorization header takes priority when X-Anonymous-Id is also sent', async () => {
+    mockPuzzleFound();
+    mockNoExistingResult();
+
+    const res = await request(app)
+      .post('/api/puzzle/guess')
+      .set('Authorization', `Bearer ${token}`)
+      .set('X-Anonymous-Id', 'some-anon-id')
+      .send({ guess: WRONG_GUESS });
+
+    expect(res.status).toBe(200);
+    expect(prisma.user.upsert).not.toHaveBeenCalled();
+    expect(prisma.dailyResult.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          userId: 'user-auth-789',
+        }),
+      })
+    );
   });
 });
 

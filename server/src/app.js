@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 
+import authRouter from './routes/auth.js';
 import puzzleRouter from './routes/puzzle.js';
 
 const app = express();
@@ -16,6 +17,9 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Auth endpoints: POST /api/auth/register, POST /api/auth/login, POST /api/auth/link, GET /api/auth/me
+app.use('/api/auth', authRouter);
 
 // Puzzle endpoints: GET /api/puzzle/today, POST /api/puzzle/guess
 app.use('/api/puzzle', puzzleRouter);

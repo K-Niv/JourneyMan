@@ -137,3 +137,58 @@ export async function submitGuessToApi(guess) {
     body: JSON.stringify({ guess }),
   });
 }
+
+// ---------------------------------------------------------------------------
+// Auth endpoint helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Register a new user account.
+ *
+ * @param {string} email
+ * @param {string} password
+ * @param {string} [displayName]
+ * @returns {Promise<{ user: object, token: string }>}
+ */
+export async function registerUser(email, password, displayName) {
+  return request('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ email, password, displayName }),
+  });
+}
+
+/**
+ * Log in with existing credentials.
+ *
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<{ user: object, token: string }>}
+ */
+export async function loginUser(email, password) {
+  return request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+/**
+ * Link an anonymous session history to the authenticated user.
+ *
+ * @param {string} anonymousId - The anonymous UUID to link
+ * @returns {Promise<{ message: string, migratedCount: number }>}
+ */
+export async function linkAnonymousAccount(anonymousId) {
+  return request('/auth/link', {
+    method: 'POST',
+    body: JSON.stringify({ anonymousId }),
+  });
+}
+
+/**
+ * Fetch the authenticated user profile.
+ *
+ * @returns {Promise<{ user: object }>}
+ */
+export async function fetchUserProfile() {
+  return request('/auth/me');
+}

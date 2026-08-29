@@ -14,7 +14,7 @@
     "dev:server": "npm run dev --workspace=server",
     "start": "node server/src/index.js",
     "start:server": "npm run start --workspace=server",
-    "build": "prisma generate && npm run build --workspace=client",
+    "build": "npm run build --workspace=client",
     "lint": "eslint . --ext .js,.jsx",
     "format": "prettier --write .",
     "test": "npm run test --workspace=shared && npm run test --workspace=server && npm run test --workspace=client",
@@ -26,8 +26,7 @@
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset --schema=./prisma/schema.prisma",
     "generate-puzzles": "node scripts/generate-puzzles.js",
-    "generate-secret": "node scripts/generate-jwt-secret.js",
-    "postinstall": "prisma generate"
+    "generate-secret": "node scripts/generate-jwt-secret.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

@@ -219,14 +219,44 @@ describe('Auth Endpoints', () => {
       });
     });
 
-    it('401: rejects request without Authorization header', async () => {
+    it('200: returns user profile for valid HTTP-only cookie', async () => {
+      const token = jwt.sign({ userId: 'user-123', email: 'test@example.com' }, JWT_SECRET);
+      prisma.user.findUnique.mockResolvedValue({
+        id: 'user-123',
+        email: 'test@example.com',
+        displayName: 'HoopsFan',
+        createdAt: new Date('2026-08-28T00:00:00Z'),
+      });
+
+      const res = await request(app)
+        .get('/api/auth/me')
+        .set('Cookie', `journeyman_token=${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.user).toMatchObject({
+        id: 'user-123',
+        email: 'test@example.com',
+        displayName: 'HoopsFan',
+      });
+    });
+
+    it('401: rejects request without Authorization header or auth cookie', async () => {
       const res = await request(app).get('/api/auth/me');
 
       expect(res.status).toBe(401);
       expect(res.body.error).toMatch(/authentication required/i);
     });
 
-    it('401: rejects invalid JWT token', async () => {
+    it('401: rejects invalid JWT token in auth cookie', async () => {
+      const res = await request(app)
+        .get('/api/auth/me')
+        .set('Cookie', 'journeyman_token=invalid-cookie-token');
+
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/invalid or expired token/i);
+    });
+
+    it('401: rejects invalid JWT token in header', async () => {
       const res = await request(app)
         .get('/api/auth/me')
         .set('Authorization', 'Bearer invalid-token');
@@ -245,6 +275,96 @@ describe('Auth Endpoints', () => {
 
       expect(res.status).toBe(404);
       expect(res.body.error).toMatch(/user not found/i);
+    });
+  });
+
+  // =========================================================================
+  // POST /api/auth/logout
+  // =========================================================================
+  describe('POST /api/auth/logout', () => {
+    it('200: clears auth and CSRF cookies', async () => {
+      const res = await request(app).post('/api/auth/logout');
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toMatch(/signed out successfully/i);
+
+      // Check cleared cookies
+      const cookies = res.headers['set-cookie'] || [];
+      const tokenCookie = cookies.find((c) => c.startsWith('journeyman_token='));
+      const csrfCookie = cookies.find((c) => c.startsWith('XSRF-TOKEN='));
+
+      expect(tokenCookie).toBeDefined();
+      expect(csrfCookie).toBeDefined();
+    });
+  });
+
+  // =========================================================================
+  // GET /api/auth/csrf & CSRF Protection
+  // =========================================================================
+  describe('CSRF Protection & /api/auth/csrf', () => {
+    it('200: returns csrfToken and sets XSRF-TOKEN cookie', async () => {
+      const res = await request(app).get('/api/auth/csrf');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('csrfToken');
+      expect(typeof res.body.csrfToken).toBe('string');
+
+      const cookies = res.headers['set-cookie'] || [];
+      const csrfCookie = cookies.find((c) => c.startsWith('XSRF-TOKEN='));
+      expect(csrfCookie).toBeDefined();
+    });
+
+    it('403: rejects mutating request when CSRF cookie is present but header is missing', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .set('Cookie', 'XSRF-TOKEN=secret-csrf-token')
+        .send({
+          email: 'test@example.com',
+          password: 'password123',
+        });
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/invalid or missing csrf token/i);
+    });
+
+    it('403: rejects mutating request when CSRF header and cookie do not match', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .set('Cookie', 'XSRF-TOKEN=token-aaa')
+        .set('X-CSRF-Token', 'token-bbb')
+        .send({
+          email: 'test@example.com',
+          password: 'password123',
+        });
+
+      expect(res.status).toBe(403);
+      expect(res.body.error).toMatch(/invalid or missing csrf token/i);
+    });
+
+    it('201: allows mutating request when CSRF header and cookie match', async () => {
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockResolvedValue({
+        id: 'user-csrf-1',
+        email: 'csrf@example.com',
+        displayName: 'CsrfPlayer',
+        createdAt: new Date('2026-08-28T00:00:00Z'),
+      });
+
+      const res = await request(app)
+        .post('/api/auth/register')
+        .set('Cookie', 'XSRF-TOKEN=valid-csrf-token')
+        .set('X-CSRF-Token', 'valid-csrf-token')
+        .send({
+          email: 'csrf@example.com',
+          password: 'password123',
+          displayName: 'CsrfPlayer',
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.user).toMatchObject({
+        id: 'user-csrf-1',
+        email: 'csrf@example.com',
+      });
     });
   });
 

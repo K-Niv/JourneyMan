@@ -27,7 +27,7 @@ import { Lock } from 'lucide-react';
 const FEEDBACK_COLORS = {
   [FEEDBACK.CORRECT]: 'bg-emerald-600 border-2 border-[#0F0024] text-white shadow-brutal-sm',
   [FEEDBACK.MISPLACED]: 'bg-[#DAAE4F] border-2 border-[#0F0024] text-[#0F0024] font-extrabold shadow-brutal-sm',
-  [FEEDBACK.INCORRECT]: 'bg-red-600 border-2 border-[#0F0024] text-white shadow-brutal-sm',
+  [FEEDBACK.INCORRECT]: 'bg-[#5A5A5A] border-2 border-[#0F0024] text-white shadow-brutal-sm',
 };
 
 export default function SlotTile({
@@ -70,7 +70,6 @@ export default function SlotTile({
   const isMediumStint = stintCount >= 5 && stintCount < 7;
 
   const roundedClass = 'rounded-none';
-  const borderClass = 'border-2 border-[#0F0024]';
   const logoSizeClass = isLargeStint
     ? 'w-3.5 h-3.5 sm:w-4.5 sm:h-4.5'
     : isMediumStint

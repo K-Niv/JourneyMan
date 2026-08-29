@@ -18,11 +18,9 @@ import {
   User,
   LogOut,
   ShieldCheck,
-  Trophy,
   BarChart2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
   TooltipContent,
@@ -39,12 +37,11 @@ import AuthModal from './AuthModal';
 import HistoryModal from './HistoryModal';
 import { useAuthStore } from '../stores/authStore';
 import { toast } from '../stores/toastStore';
-import { cn } from '@/lib/utils';
 
 export default function Header({
   puzzleNumber,
   puzzleDate,
-  activeView = 'landing',
+  _activeView = 'landing',
   onNavigate,
   showHelp: controlledShowHelp,
   onHelpOpenChange: controlledOnHelpOpenChange,

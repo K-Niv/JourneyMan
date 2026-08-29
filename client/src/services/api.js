@@ -66,6 +66,16 @@ export class ApiError extends Error {
 const BASE = '/api';
 
 /**
+ * Extract XSRF-TOKEN cookie from document.cookie.
+ * @returns {string|null}
+ */
+export function getCsrfTokenFromCookie() {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+/**
  * Low-level request helper.
  *
  * @param {string} path     - API path (e.g. '/puzzle/today')
@@ -74,17 +84,39 @@ const BASE = '/api';
  * @throws {ApiError}       - On non-2xx responses
  */
 async function request(path, options = {}) {
-  const { headers: customHeaders, ...rest } = options;
+  const { headers: customHeaders, method = 'GET', ...rest } = options;
+  const upperMethod = method.toUpperCase();
+  const isMutating = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(upperMethod);
+
+  // If this is a mutating request and no CSRF cookie is present, bootstrap it via /auth/csrf
+  let csrfToken = getCsrfTokenFromCookie();
+  if (isMutating && !csrfToken && path !== '/auth/csrf') {
+    try {
+      const csrfRes = await fetch(`${BASE}/auth/csrf`, { credentials: 'include' });
+      if (csrfRes.ok) {
+        const data = await csrfRes.json();
+        csrfToken = data.csrfToken || getCsrfTokenFromCookie();
+      }
+    } catch {
+      // Proceed; server will validate
+    }
+  }
 
   // Build headers — identity headers are injected lazily so the auth store
   // doesn't need to be imported at module-load time (avoids circular deps).
   const headers = {
     'Content-Type': 'application/json',
     ...getIdentityHeaders(),
+    ...(csrfToken && isMutating ? { 'X-CSRF-Token': csrfToken } : {}),
     ...customHeaders,
   };
 
-  const res = await fetch(`${BASE}${path}`, { headers, ...rest });
+  const res = await fetch(`${BASE}${path}`, {
+    method: upperMethod,
+    headers,
+    credentials: 'include',
+    ...rest,
+  });
 
   // Parse body (some error responses may not be JSON)
   let body;
@@ -104,7 +136,7 @@ async function request(path, options = {}) {
 /**
  * Read identity headers from the persisted auth store.
  * Delegates to the store's own `getHeaders()` so there is a single source
- * of truth — when PR 09 adds new auth headers, only authStore needs updating.
+ * of truth.
  *
  * @returns {Record<string, string>}
  */
@@ -191,6 +223,24 @@ export async function linkAnonymousAccount(anonymousId) {
  */
 export async function fetchUserProfile() {
   return request('/auth/me');
+}
+
+/**
+ * Log out user and clear auth cookies on server.
+ *
+ * @returns {Promise<{ message: string }>}
+ */
+export async function logoutUser() {
+  return request('/auth/logout', { method: 'POST' });
+}
+
+/**
+ * Fetch a fresh CSRF token from the server.
+ *
+ * @returns {Promise<{ csrfToken: string }>}
+ */
+export async function fetchCsrfToken() {
+  return request('/auth/csrf');
 }
 
 // ---------------------------------------------------------------------------

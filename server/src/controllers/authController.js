@@ -16,9 +16,16 @@ import {
   getUserProfile,
   linkAnonymousAccount,
 } from '../services/authService.js';
+import {
+  setAuthCookies,
+  clearAuthCookies,
+  generateCsrfToken,
+  getCsrfCookieOptions,
+  CSRF_COOKIE_NAME,
+} from '../middleware/csrf.js';
 
 /**
- * Register a new user account.
+ * Register a new user account and set HTTP-only auth + CSRF cookies.
  *
  * @type {import('express').RequestHandler}
  */
@@ -27,7 +34,12 @@ export async function register(req, res) {
 
   try {
     const payload = await registerUser(email, password, displayName);
-    return res.status(201).json(payload);
+    const csrfToken = setAuthCookies(res, payload.token);
+    return res.status(201).json({
+      user: payload.user,
+      token: payload.token,
+      csrfToken,
+    });
   } catch (err) {
     const status = err.statusCode ?? 500;
     const message = status < 500 ? err.message : 'Internal server error.';
@@ -36,7 +48,7 @@ export async function register(req, res) {
 }
 
 /**
- * Authenticate existing user with email and password.
+ * Authenticate existing user with email and password, setting HTTP-only auth + CSRF cookies.
  *
  * @type {import('express').RequestHandler}
  */
@@ -45,12 +57,41 @@ export async function login(req, res) {
 
   try {
     const payload = await loginUser(email, password);
-    return res.status(200).json(payload);
+    const csrfToken = setAuthCookies(res, payload.token);
+    return res.status(200).json({
+      user: payload.user,
+      token: payload.token,
+      csrfToken,
+    });
   } catch (err) {
     const status = err.statusCode ?? 500;
     const message = status < 500 ? err.message : 'Internal server error.';
     return res.status(status).json({ error: message });
   }
+}
+
+/**
+ * Terminate user session by clearing auth and CSRF cookies.
+ *
+ * @type {import('express').RequestHandler}
+ */
+export async function logout(_req, res) {
+  clearAuthCookies(res);
+  return res.status(200).json({ message: 'Signed out successfully.' });
+}
+
+/**
+ * Fetch or refresh CSRF token for the client.
+ *
+ * @type {import('express').RequestHandler}
+ */
+export async function getCsrf(req, res) {
+  let csrfToken = req.cookies?.[CSRF_COOKIE_NAME];
+  if (!csrfToken) {
+    csrfToken = generateCsrfToken();
+    res.cookie(CSRF_COOKIE_NAME, csrfToken, getCsrfCookieOptions());
+  }
+  return res.status(200).json({ csrfToken });
 }
 
 /**

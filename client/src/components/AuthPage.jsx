@@ -11,7 +11,7 @@ import RegisterForm from './RegisterForm';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { ArrowLeft, Sparkles, Trophy, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowLeft, Trophy, ShieldCheck, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function AuthPage({ onBack, onPlay, defaultTab = 'login' }) {

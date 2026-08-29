@@ -88,7 +88,7 @@ export default function HowToPlayModal({ open, onOpenChange }) {
                 description="This team is in the timeline, but in a different position"
               />
               <LegendTile
-                color="bg-red-600 text-white shadow-brutal-sm"
+                color="bg-[#5A5A5A] text-white shadow-brutal-sm"
                 label="NYK"
                 description="This team is not in the player's career timeline"
               />

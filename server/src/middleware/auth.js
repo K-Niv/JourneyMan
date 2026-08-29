@@ -14,19 +14,27 @@
  */
 
 import jwt from 'jsonwebtoken';
+import { AUTH_COOKIE_NAME } from './csrf.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
 
 /**
- * Helper to extract Bearer token from Authorization header.
+ * Helper to extract JWT token from HTTP-only cookie or Authorization header.
  * @param {import('express').Request} req
  * @returns {string|null}
  */
-function extractBearerToken(req) {
+export function extractToken(req) {
+  // 1. Check HTTP-only auth cookie (preferred)
+  if (req.cookies && typeof req.cookies[AUTH_COOKIE_NAME] === 'string' && req.cookies[AUTH_COOKIE_NAME]) {
+    return req.cookies[AUTH_COOKIE_NAME];
+  }
+
+  // 2. Fallback to Authorization: Bearer <token> for testing and back-compat
   const authHeader = req.headers.authorization;
   if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
     return authHeader.slice(7).trim();
   }
+
   return null;
 }
 
@@ -37,7 +45,7 @@ function extractBearerToken(req) {
  * @type {import('express').RequestHandler}
  */
 export function requireAuth(req, res, next) {
-  const token = extractBearerToken(req);
+  const token = extractToken(req);
 
   if (!token) {
     return res.status(401).json({ error: 'Authentication required.' });
@@ -61,7 +69,7 @@ export function requireAuth(req, res, next) {
  * @type {import('express').RequestHandler}
  */
 export function optionalAuth(req, _res, next) {
-  const token = extractBearerToken(req);
+  const token = extractToken(req);
 
   if (token) {
     try {

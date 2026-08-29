@@ -24,6 +24,7 @@ app.set('trust proxy', 1);
 // Security Headers (Helmet) & CORS
 app.use(helmetMiddleware);
 app.use(corsMiddleware);
+app.options('*', corsMiddleware);
 
 // Cookie parser for reading HTTP-only auth and CSRF cookies
 app.use(cookieParser());

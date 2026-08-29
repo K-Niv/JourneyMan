@@ -36,7 +36,7 @@ export function generateCsrfToken() {
  * Prevents client-side script access (XSS mitigation).
  */
 export function getAuthCookieOptions() {
-  const sameSite = config.cookieSameSite || (config.isProd ? 'lax' : 'lax');
+  const sameSite = config.cookieSameSite || (config.isProd ? 'none' : 'lax');
   const secure = config.isProd || sameSite === 'none';
   return {
     httpOnly: true,
@@ -52,7 +52,7 @@ export function getAuthCookieOptions() {
  * Readable by client JS so it can be extracted and sent in request headers.
  */
 export function getCsrfCookieOptions() {
-  const sameSite = config.cookieSameSite || (config.isProd ? 'lax' : 'lax');
+  const sameSite = config.cookieSameSite || (config.isProd ? 'none' : 'lax');
   const secure = config.isProd || sameSite === 'none';
   return {
     httpOnly: false,

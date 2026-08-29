@@ -37,40 +37,61 @@ export const helmetMiddleware = helmet({
 });
 
 /**
- * Determine allowed origins for CORS.
+ * Check whether an origin is allowed by CORS policy.
+ * @param {string|undefined} origin
+ * @returns {boolean}
  */
-const getCorsOrigins = () => {
-  const allowed = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:4173',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:4173',
-  ];
+export const isOriginAllowed = (origin) => {
+  // Allow requests with no origin (e.g. mobile apps, curl, server-to-server, health checks)
+  if (!origin) return true;
 
-  if (config.clientUrl) {
-    const customOrigins = config.clientUrl.split(',').map((o) => o.trim());
-    allowed.push(...customOrigins);
+  // In non-production environments, allow all origins for easy development & testing
+  if (!config.isProd) return true;
+
+  const normalizedOrigin = origin.trim().replace(/\/+$/, '').toLowerCase();
+
+  // Allow standard localhost / 127.0.0.1 ports
+  const localRegex = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+  if (localRegex.test(normalizedOrigin)) {
+    return true;
   }
 
-  return allowed;
+  // Allow all Vercel domains (production domains, custom subdomains, preview branches)
+  const vercelRegex = /^https:\/\/[a-z0-9-_.]+\.vercel\.app$/;
+  if (vercelRegex.test(normalizedOrigin) || normalizedOrigin === 'https://vercel.app') {
+    return true;
+  }
+
+  // Allow configured CLIENT_URL(s)
+  if (config.clientUrl) {
+    const customOrigins = config.clientUrl
+      .split(',')
+      .map((o) => o.trim().replace(/\/+$/, '').toLowerCase())
+      .filter(Boolean);
+
+    for (const allowed of customOrigins) {
+      if (
+        normalizedOrigin === allowed ||
+        normalizedOrigin === `https://${allowed}` ||
+        normalizedOrigin === `http://${allowed}`
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 };
 
 /**
- * CORS Middleware configured with whitelist support and preflight caching.
+ * CORS Middleware configured with whitelist support, preflight caching, and credential exchange.
  */
 export const corsMiddleware = cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-    if (!origin) return callback(null, true);
-
-    const allowedOrigins = getCorsOrigins();
-    if (allowedOrigins.includes(origin) || !config.isProd) {
+    if (isOriginAllowed(origin)) {
       return callback(null, true);
     }
-
-    return callback(new Error(`Origin ${origin} not allowed by CORS policy.`));
+    return callback(null, false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -81,5 +102,6 @@ export const corsMiddleware = cors({
     'X-CSRF-Token',
     'X-XSRF-Token',
   ],
+  exposedHeaders: ['X-CSRF-Token', 'X-XSRF-Token', 'Set-Cookie'],
   maxAge: 86400, // 24 hours preflight cache
 });

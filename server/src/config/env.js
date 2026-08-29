@@ -32,13 +32,8 @@ if (!DATABASE_URL && !isTest) {
 }
 
 const CLIENT_URL = process.env.CLIENT_URL || process.env.CORS_ORIGIN || '';
-const isCrossSite = Boolean(
-  isProd &&
-  CLIENT_URL &&
-  !CLIENT_URL.includes('localhost') &&
-  !CLIENT_URL.includes('127.0.0.1')
-);
-const COOKIE_SAME_SITE = process.env.COOKIE_SAME_SITE || (isCrossSite ? 'none' : 'lax');
+const isCrossSite = isProd;
+const COOKIE_SAME_SITE = process.env.COOKIE_SAME_SITE || (isProd ? 'none' : 'lax');
 
 export const config = {
   port: PORT,

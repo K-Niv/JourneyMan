@@ -42,6 +42,21 @@ app.use('/api', csrfProtection);
 // API Routes
 // ---------------------------------------------------------------------------
 
+// Root Info Endpoint
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    name: 'JourneyMan API',
+    status: 'online',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      todayPuzzle: '/api/puzzle/today',
+      history: '/api/history',
+      stats: '/api/history/stats',
+    },
+  });
+});
+
 // Health Check Endpoint
 app.get('/api/health', (_req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });

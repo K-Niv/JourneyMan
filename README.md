@@ -298,17 +298,28 @@ npm run check
 
 ## 🚢 Deployment
 
-### Production Build
+For complete, step-by-step instructions with copy-paste deployment configs, see the **[Production Deployment Guide](DEPLOYMENT.md)**.
+
+### Deployment Options
+- **Decoupled (Recommended)**: Frontend on [Vercel](https://vercel.com) + Backend API on [Render](https://render.com) + Database on [Neon](https://neon.tech).
+- **Full-Stack Monolith**: Co-hosted Express SPA on [Render](https://render.com) or [Railway](https://railway.app).
+- **Docker Container**: Multi-stage `Dockerfile` ready for Fly.io, Railway, or Google Cloud Run.
+
+### Quick Commands
 
 ```bash
-# Build optimized client bundles with Rollup manual chunking
-npm run build
-```
+# Generate high-entropy JWT Secret
+npm run generate-secret
 
-### Hosting Recommendations
-1. **Database**: PostgreSQL hosted on [Neon](https://neon.tech) (serverless PostgreSQL with SSL connection pooling).
-2. **Server API**: Deploy `server/` to [Railway](https://railway.app) or [Render](https://render.com) with `DATABASE_URL` and `JWT_SECRET`.
-3. **Frontend Client**: Deploy `client/` to [Vercel](https://vercel.com) or configure co-hosted static serving via Express (`NODE_ENV=production`).
+# Deploy Prisma database schema migrations
+npm run db:deploy
+
+# Build production client bundles
+npm run build
+
+# Start production Express server
+npm start
+```
 
 ---
 

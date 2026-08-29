@@ -1,0 +1,33 @@
+# ==============================================================================
+# JourneyMan — Render Blueprint Configuration (Backend Web Service)
+# ==============================================================================
+# Use this Blueprint to deploy the Express + Prisma backend on Render.
+# Documentation: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: journeyman-api
+    env: node
+    plan: free
+    region: ohio # Match Neon database AWS region if applicable (us-east-2)
+    buildCommand: npm install && npx prisma generate
+    preDeployCommand: npx prisma migrate deploy --schema=./prisma/schema.prisma
+    startCommand: npm run start:server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Set via Render Dashboard from your Neon connection string
+      - key: JWT_SECRET
+        generateValue: true # Render will generate a cryptographically secure random string
+      - key: CLIENT_URL
+        sync: false # Set to your frontend Vercel URL (e.g., https://journeyman.vercel.app)
+      - key: RATE_LIMIT_ENABLED
+        value: "true"
+      - key: RATE_LIMIT_GENERAL_MAX
+        value: "300"
+      - key: RATE_LIMIT_AUTH_MAX
+        value: "20"
+      - key: RATE_LIMIT_GUESS_MAX
+        value: "60"

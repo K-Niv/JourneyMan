@@ -32,6 +32,13 @@ if (!DATABASE_URL && !isTest) {
 }
 
 const CLIENT_URL = process.env.CLIENT_URL || process.env.CORS_ORIGIN || '';
+const isCrossSite = Boolean(
+  isProd &&
+  CLIENT_URL &&
+  !CLIENT_URL.includes('localhost') &&
+  !CLIENT_URL.includes('127.0.0.1')
+);
+const COOKIE_SAME_SITE = process.env.COOKIE_SAME_SITE || (isCrossSite ? 'none' : 'lax');
 
 export const config = {
   port: PORT,
@@ -41,6 +48,8 @@ export const config = {
   jwtSecret: JWT_SECRET,
   databaseUrl: DATABASE_URL,
   clientUrl: CLIENT_URL,
+  isCrossSite,
+  cookieSameSite: COOKIE_SAME_SITE,
   // Rate limiting config
   rateLimit: {
     enabled: process.env.RATE_LIMIT_ENABLED ? process.env.RATE_LIMIT_ENABLED === 'true' : !isTest,

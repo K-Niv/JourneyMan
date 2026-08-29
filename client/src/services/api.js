@@ -192,3 +192,32 @@ export async function linkAnonymousAccount(anonymousId) {
 export async function fetchUserProfile() {
   return request('/auth/me');
 }
+
+// ---------------------------------------------------------------------------
+// History & Stats endpoint helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch monthly game history for the authenticated user.
+ *
+ * @param {number|string} [year]  - 4-digit year (e.g. 2026)
+ * @param {number|string} [month] - 1-based month (1-12)
+ * @returns {Promise<{ history: Array<object> }>}
+ */
+export async function fetchHistory(year, month) {
+  const params = new URLSearchParams();
+  if (year) params.set('year', year);
+  if (month) params.set('month', month);
+  const qs = params.toString();
+  return request(`/history${qs ? `?${qs}` : ''}`);
+}
+
+/**
+ * Fetch aggregate game statistics and streaks for the authenticated user.
+ *
+ * @returns {Promise<{ stats: object }>}
+ */
+export async function fetchStats() {
+  return request('/history/stats');
+}
+

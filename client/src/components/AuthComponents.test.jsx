@@ -111,7 +111,7 @@ describe('Auth Components', () => {
   });
 
   describe('Header Auth Integration', () => {
-    it('renders help button, title, disabled calendar button, and auth button for guest', () => {
+    it('renders help button, title, calendar button, and auth button for guest', () => {
       render(<Header puzzleNumber={42} puzzleDate="2026-08-28" />);
 
       expect(screen.getByRole('button', { name: /how to play/i })).toBeDefined();
@@ -120,7 +120,7 @@ describe('Auth Components', () => {
 
       const calendarBtn = screen.getByRole('button', { name: /history/i });
       expect(calendarBtn).toBeDefined();
-      expect(calendarBtn.hasAttribute('disabled')).toBe(true);
+      expect(calendarBtn.hasAttribute('disabled')).toBe(false);
 
       const authBtn = screen.getByRole('button', { name: /sign in or register/i });
       expect(authBtn).toBeDefined();

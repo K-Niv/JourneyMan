@@ -26,11 +26,14 @@ import {
 } from '@/components/ui/popover';
 import HowToPlayModal from './HowToPlayModal';
 import AuthModal from './AuthModal';
+import HistoryModal from './HistoryModal';
 import { useAuthStore } from '../stores/authStore';
+import { toast } from '../stores/toastStore';
 
 export default function Header({ puzzleNumber, puzzleDate }) {
   const [showHelp, setShowHelp] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const user = useAuthStore((s) => s.user);
@@ -85,7 +88,7 @@ export default function Header({ puzzleNumber, puzzleDate }) {
 
         {/* Right — Actions: Calendar + Auth/Profile */}
         <div className="flex items-center gap-1">
-          {/* Calendar icon (disabled placeholder for PR10) */}
+          {/* Calendar / History Button */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -93,14 +96,24 @@ export default function Header({ puzzleNumber, puzzleDate }) {
                 variant="ghost"
                 size="icon"
                 className="rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary"
-                aria-label="History (coming soon)"
-                disabled
+                aria-label="History & Stats"
+                onClick={() => {
+                  if (user) {
+                    setShowHistoryModal(true);
+                  } else {
+                    toast.info(
+                      'Sign in to view your history',
+                      'Create a free account or sign in to track your streaks, stats, and calendar history.'
+                    );
+                    setShowAuthModal(true);
+                  }
+                }}
               >
                 <Calendar className="h-5 w-5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              <p>History — Coming Soon</p>
+              <p>History & Stats</p>
             </TooltipContent>
           </Tooltip>
 
@@ -185,6 +198,9 @@ export default function Header({ puzzleNumber, puzzleDate }) {
 
       {/* Auth Modal */}
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
+
+      {/* History & Stats Modal */}
+      <HistoryModal open={showHistoryModal} onOpenChange={setShowHistoryModal} />
     </TooltipProvider>
   );
 }

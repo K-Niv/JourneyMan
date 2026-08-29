@@ -3,6 +3,7 @@ import cors from 'cors';
 
 import authRouter from './routes/auth.js';
 import puzzleRouter from './routes/puzzle.js';
+import historyRouter from './routes/history.js';
 
 const app = express();
 
@@ -23,6 +24,9 @@ app.use('/api/auth', authRouter);
 
 // Puzzle endpoints: GET /api/puzzle/today, POST /api/puzzle/guess
 app.use('/api/puzzle', puzzleRouter);
+
+// History endpoints: GET /api/history, GET /api/history/stats
+app.use('/api/history', historyRouter);
 
 // ---------------------------------------------------------------------------
 // 404 catch-all

@@ -81,8 +81,8 @@ Ensure you have the following credentials ready before deploying:
 4. In the Project Configuration:
    - **Framework Preset**: `Vite`
    - **Root Directory**: `./` (leave at root, Vercel will detect `vercel.json` and workspaces)
-   - **Build Command**: `npm run build --workspace=client` (or default `npm run build`)
-   - **Output Directory**: `client/dist`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist` (default)
 5. Expand **Environment Variables** and add:
    - `VITE_API_BASE_URL` = `https://journeyman-api.onrender.com/api` (Replace with your actual Render API URL)
 6. Click **Deploy**.

@@ -11,7 +11,7 @@
  *  - Guess Attempt Distribution (1-6 + Fail) with pure CSS responsive bar charts
  */
 
-import { Flame, Trophy, Award, BarChart3, Target } from 'lucide-react';
+import { Flame, Award, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function StatsPanel({ stats }) {

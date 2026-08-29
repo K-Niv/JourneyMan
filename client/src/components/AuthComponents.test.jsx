@@ -134,7 +134,6 @@ describe('Auth Components', () => {
           displayName: 'LeBron',
           createdAt: new Date().toISOString(),
         },
-        token: 'test-token',
       });
 
       render(<Header puzzleNumber={42} puzzleDate="2026-08-28" />);

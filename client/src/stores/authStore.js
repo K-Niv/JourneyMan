@@ -17,6 +17,7 @@ import { persist } from 'zustand/middleware';
 import {
   registerUser,
   loginUser,
+  logoutUser,
   linkAnonymousAccount,
   fetchUserProfile,
 } from '../services/api.js';
@@ -34,7 +35,6 @@ import { toast } from './toastStore.js';
 /**
  * @typedef {object} AuthState
  * @property {UserProfile|null} user           - Authenticated user profile (null for anon)
- * @property {string|null}      token          - JWT access token
  * @property {string|null}      anonymousId    - Client-generated UUID for anonymous sessions
  * @property {boolean}          isAuthLoading  - Loading state for auth operations
  * @property {string|null}      authError      - Error message from last auth action
@@ -47,7 +47,6 @@ export const useAuthStore = create(
       // State
       // -----------------------------------------------------------------------
       user: null,
-      token: null,
       anonymousId: null,
       isAuthLoading: false,
       authError: null,
@@ -61,8 +60,8 @@ export const useAuthStore = create(
        * Called once on app mount.
        */
       ensureAnonymousId: () => {
-        const { token, anonymousId } = get();
-        if (!token && !anonymousId) {
+        const { user, anonymousId } = get();
+        if (!user && !anonymousId) {
           const newId = typeof crypto !== 'undefined' && crypto.randomUUID
             ? crypto.randomUUID()
             : `anon-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -72,23 +71,21 @@ export const useAuthStore = create(
 
       /**
        * Build identity headers object for the API client.
+       * Cookies are handled natively by the browser; guest UUID is sent in header.
        *
        * @returns {Record<string, string>}
        */
       getHeaders: () => {
-        const { anonymousId, token } = get();
+        const { anonymousId } = get();
         const headers = {};
         if (anonymousId) {
           headers['X-Anonymous-Id'] = anonymousId;
-        }
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
         }
         return headers;
       },
 
       /**
-       * Register a new account, store credentials, and migrate any anonymous history.
+       * Register a new account, establish cookie session, and migrate any anonymous history.
        *
        * @param {string} email
        * @param {string} password
@@ -100,10 +97,9 @@ export const useAuthStore = create(
         const prevAnonymousId = get().anonymousId;
 
         try {
-          const { user, token } = await registerUser(email, password, displayName);
+          const { user } = await registerUser(email, password, displayName);
           set({
             user,
-            token,
             isAuthLoading: false,
             authError: null,
           });
@@ -143,7 +139,7 @@ export const useAuthStore = create(
       },
 
       /**
-       * Log in with existing account, store credentials, and migrate any anonymous history.
+       * Log in with existing account, establish cookie session, and migrate any anonymous history.
        *
        * @param {string} email
        * @param {string} password
@@ -154,10 +150,9 @@ export const useAuthStore = create(
         const prevAnonymousId = get().anonymousId;
 
         try {
-          const { user, token } = await loginUser(email, password);
+          const { user } = await loginUser(email, password);
           set({
             user,
-            token,
             isAuthLoading: false,
             authError: null,
           });
@@ -197,34 +192,36 @@ export const useAuthStore = create(
       },
 
       /**
-       * Validate token and refresh user profile on app load.
+       * Validate HTTP-only session cookie and refresh user profile on app load.
        */
       loadProfile: async () => {
-        const { token } = get();
-        if (!token) return;
-
         try {
           const { user } = await fetchUserProfile();
           set({ user });
         } catch (err) {
-          // Token is expired or invalid — clear auth state gracefully
+          // Cookie is expired or invalid — clear user auth state gracefully
           if (err.status === 401 || err.status === 404) {
-            get().logout();
+            set({ user: null });
           }
         }
       },
 
       /**
-       * Clear authentication credentials and create a fresh anonymous session.
+       * Clear authentication credentials on server & client, and create a fresh anonymous session.
        */
-      logout: () => {
+      logout: async () => {
+        try {
+          await logoutUser();
+        } catch {
+          // Ignore network errors on logout
+        }
+
         const freshAnonId = typeof crypto !== 'undefined' && crypto.randomUUID
           ? crypto.randomUUID()
           : `anon-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
         set({
           user: null,
-          token: null,
           authError: null,
           anonymousId: freshAnonId,
         });
@@ -252,7 +249,6 @@ export const useAuthStore = create(
       clearSession: () => {
         set({
           user: null,
-          token: null,
           anonymousId: null,
           authError: null,
           isAuthLoading: false,
@@ -262,8 +258,6 @@ export const useAuthStore = create(
     {
       name: 'journeyman-auth',
       partialize: (state) => ({
-        user: state.user,
-        token: state.token,
         anonymousId: state.anonymousId,
       }),
     }

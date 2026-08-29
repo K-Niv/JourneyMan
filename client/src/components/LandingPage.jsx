@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 export default function LandingPage({
   onPlay,
   onOpenHelp,
-  onOpenAuth,
+  _onOpenAuth,
   puzzleNumber = 1,
   puzzleDate = 'Today',
 }) {
@@ -56,7 +56,7 @@ export default function LandingPage({
       years: 'Never',
       status: 'incorrect',
       badge: 'Wrong Team',
-      color: 'bg-red-600 text-white border-[#0F0024]',
+      color: 'bg-[#5A5A5A] text-white border-[#0F0024]',
     },
   ];
 
@@ -92,7 +92,7 @@ export default function LandingPage({
             onClick={onPlay}
           >
             <Play className="w-5 h-5 mr-2 fill-[#0F0024]" />
-            Play Today's Puzzle
+            Play Today&apos;s Puzzle
           </Button>
 
           <Button
@@ -155,8 +155,8 @@ export default function LandingPage({
               <span className="font-bold text-[#0F0024]">Green</span> = Exact
               <span className="w-2.5 h-2.5 bg-[#DAAE4F] border border-[#0F0024] ml-1.5" />
               <span className="font-bold text-[#0F0024]">Gold</span> = Misplaced
-              <span className="w-2.5 h-2.5 bg-red-600 border border-[#0F0024] ml-1.5" />
-              <span className="font-bold text-[#0F0024]">Red</span> = Wrong Team
+              <span className="w-2.5 h-2.5 bg-[#5A5A5A] border border-[#0F0024] ml-1.5" />
+              <span className="font-bold text-[#0F0024]">Grey</span> = Wrong Team
             </div>
           </div>
         </div>

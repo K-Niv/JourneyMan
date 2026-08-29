@@ -3,9 +3,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
+import cookieParser from 'cookie-parser';
 import { config } from './config/env.js';
 import { helmetMiddleware, corsMiddleware } from './middleware/security.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
+import { csrfProtection } from './middleware/csrf.js';
 
 import authRouter from './routes/auth.js';
 import puzzleRouter from './routes/puzzle.js';
@@ -23,11 +25,17 @@ app.set('trust proxy', 1);
 app.use(helmetMiddleware);
 app.use(corsMiddleware);
 
+// Cookie parser for reading HTTP-only auth and CSRF cookies
+app.use(cookieParser());
+
 // JSON body parser with strict 10kb payload limit to prevent large body attacks
 app.use(express.json({ limit: '10kb' }));
 
 // Apply general rate limiter across all /api routes
 app.use('/api', generalLimiter);
+
+// Apply CSRF protection across all /api routes
+app.use('/api', csrfProtection);
 
 // ---------------------------------------------------------------------------
 // API Routes

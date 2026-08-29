@@ -16,14 +16,18 @@ import { authLimiter } from '../middleware/rateLimiter.js';
 import {
   register,
   login,
+  logout,
+  getCsrf,
   getMe,
   linkAccount,
 } from '../controllers/authController.js';
 
 const router = Router();
 
+router.get('/csrf', getCsrf);
 router.post('/register', authLimiter, register);
 router.post('/login', authLimiter, login);
+router.post('/logout', logout);
 router.post('/link', authLimiter, requireAuth, linkAccount);
 router.get('/me', requireAuth, getMe);
 

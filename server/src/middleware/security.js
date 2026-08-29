@@ -74,6 +74,12 @@ export const corsMiddleware = cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Anonymous-Id'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Anonymous-Id',
+    'X-CSRF-Token',
+    'X-XSRF-Token',
+  ],
   maxAge: 86400, // 24 hours preflight cache
 });

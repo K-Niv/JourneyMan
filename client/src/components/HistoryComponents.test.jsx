@@ -182,7 +182,6 @@ describe('History Components', () => {
     it('opens HistoryModal and fetches data when authenticated user clicks calendar', async () => {
       useAuthStore.setState({
         user: { id: 'u1', email: 'test@example.com', displayName: 'Player One' },
-        token: 'fake-jwt',
       });
 
       api.fetchStats.mockResolvedValue({

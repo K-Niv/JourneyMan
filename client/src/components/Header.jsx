@@ -30,11 +30,29 @@ import HistoryModal from './HistoryModal';
 import { useAuthStore } from '../stores/authStore';
 import { toast } from '../stores/toastStore';
 
-export default function Header({ puzzleNumber, puzzleDate }) {
-  const [showHelp, setShowHelp] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
+export default function Header({
+  puzzleNumber,
+  puzzleDate,
+  showHelp: controlledShowHelp,
+  onHelpOpenChange: controlledOnHelpOpenChange,
+  showAuthModal: controlledShowAuthModal,
+  onAuthOpenChange: controlledOnAuthOpenChange,
+  showHistoryModal: controlledShowHistoryModal,
+  onHistoryOpenChange: controlledOnHistoryOpenChange,
+}) {
+  const [internalShowHelp, setInternalShowHelp] = useState(false);
+  const [internalShowAuthModal, setInternalShowAuthModal] = useState(false);
+  const [internalShowHistoryModal, setInternalShowHistoryModal] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const showHelp = controlledShowHelp !== undefined ? controlledShowHelp : internalShowHelp;
+  const setShowHelp = controlledOnHelpOpenChange || setInternalShowHelp;
+
+  const showAuthModal = controlledShowAuthModal !== undefined ? controlledShowAuthModal : internalShowAuthModal;
+  const setShowAuthModal = controlledOnAuthOpenChange || setInternalShowAuthModal;
+
+  const showHistoryModal = controlledShowHistoryModal !== undefined ? controlledShowHistoryModal : internalShowHistoryModal;
+  const setShowHistoryModal = controlledOnHistoryOpenChange || setInternalShowHistoryModal;
 
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);

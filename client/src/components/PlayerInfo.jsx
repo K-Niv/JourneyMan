@@ -5,9 +5,11 @@
  * difficulty badge, and key stats (stint count, guesses remaining).
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { DIFFICULTY } from 'shared';
+import { cn } from '@/lib/utils';
 
 /**
  * Difficulty badge styling configuration.
@@ -43,23 +45,37 @@ export default function PlayerInfo({
   guessesUsed,
   maxAttempts,
 }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
   const diffConfig = DIFFICULTY_CONFIG[difficulty];
 
   return (
-    <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-5 shadow-2xl">
-      <div className="flex items-start gap-4">
+    <div
+      className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl transition-all"
+      role="region"
+      aria-label="Mystery Player Profile"
+    >
+      <div className="flex items-start gap-3.5 sm:gap-4">
         {/* Player image */}
-        <div className="shrink-0">
+        <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 border-slate-700 bg-slate-800 shadow-lg">
           {player?.imageUrl ? (
-            <img
-              src={player.imageUrl}
-              alt={player.name}
-              className="w-20 h-20 rounded-xl object-cover border-2 border-slate-700 shadow-lg bg-slate-800"
-              loading="eager"
-            />
+            <>
+              {!imageLoaded && (
+                <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
+              )}
+              <img
+                src={player.imageUrl}
+                alt={player.name || 'Mystery Player'}
+                onLoad={() => setImageLoaded(true)}
+                className={cn(
+                  'w-full h-full object-cover transition-opacity duration-300',
+                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                )}
+                loading="eager"
+              />
+            </>
           ) : (
-            <div className="w-20 h-20 rounded-xl border-2 border-slate-700 bg-slate-800 flex items-center justify-center">
-              <span className="text-2xl">🏀</span>
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-xl sm:text-2xl" role="img" aria-label="Basketball icon">🏀</span>
             </div>
           )}
         </div>
@@ -67,11 +83,11 @@ export default function PlayerInfo({
         {/* Player info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground truncate">
+            <h2 className="text-lg sm:text-2xl font-extrabold text-foreground truncate tracking-tight">
               {player?.name ?? 'Mystery Player'}
             </h2>
             {diffConfig && (
-              <Badge className={`shrink-0 ${diffConfig.className}`}>
+              <Badge className={cn('shrink-0 text-xs py-0.5', diffConfig.className)}>
                 <span className="mr-1">{diffConfig.emoji}</span>
                 {diffConfig.label}
               </Badge>
@@ -79,19 +95,19 @@ export default function PlayerInfo({
           </div>
 
           {/* Stats row */}
-          <div className="flex items-center gap-4 mt-3">
+          <div className="flex items-center gap-4 mt-2 sm:mt-3">
             <div className="text-center">
-              <p className="text-lg font-bold text-amber-400">{stintCount}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+              <p className="text-base sm:text-lg font-bold text-amber-400">{stintCount}</p>
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
                 Stints
               </p>
             </div>
-            <div className="w-px h-8 bg-slate-800" />
+            <div className="w-px h-7 sm:h-8 bg-slate-800" />
             <div className="text-center">
-              <p className="text-lg font-bold text-amber-400">
+              <p className="text-base sm:text-lg font-bold text-amber-400">
                 {guessesUsed}/{maxAttempts}
               </p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
                 Guesses
               </p>
             </div>

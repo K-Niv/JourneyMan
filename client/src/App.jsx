@@ -7,9 +7,13 @@
  * locked slots, and game over modal with career timeline and countdown.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { usePuzzleLoader } from './hooks/usePuzzleLoader.js';
 import { useGameStore } from './stores/gameStore.js';
+import { useAuthStore } from './stores/authStore.js';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts.js';
+import { useLiveAnnouncer } from './hooks/useLiveAnnouncer.js';
+import { toast } from './stores/toastStore.js';
 import { MAX_ATTEMPTS, FEEDBACK } from 'shared';
 import { cn } from '@/lib/utils';
 
@@ -18,12 +22,14 @@ import Header from '@/components/Header';
 import PlayerInfo from '@/components/PlayerInfo';
 import GuessGrid from '@/components/GuessGrid';
 import GameOverModal from '@/components/GameOverModal';
+import BoardSkeleton from '@/components/BoardSkeleton';
 import ToastContainer from '@/components/ui/ToastContainer';
 import { Button } from '@/components/ui/button';
 import { Eraser, Send, Loader2, Trophy } from 'lucide-react';
 
 export default function App() {
   const { isLoading, error } = usePuzzleLoader();
+  const { announce, announcement } = useLiveAnnouncer();
 
   // Game state
   const puzzleId = useGameStore((s) => s.puzzleId);
@@ -43,16 +49,99 @@ export default function App() {
 
   // Actions
   const setSlot = useGameStore((s) => s.setSlot);
+  const clearSlot = useGameStore((s) => s.clearSlot);
   const swapSlots = useGameStore((s) => s.swapSlots);
   const clearCurrentGuess = useGameStore((s) => s.clearCurrentGuess);
   const submitGuess = useGameStore((s) => s.submitGuess);
 
-  // Modal display state
-  const [showGameOverModal, setShowGameOverModal] = useState(false);
-  const prevGameStatusRef = useRef(gameStatus);
+  // Auth state for history modal trigger
+  const user = useAuthStore((s) => s.user);
 
+  // Modal & UI interaction state
+  const [showHelp, setShowHelp] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [showGameOverModal, setShowGameOverModal] = useState(false);
+  const [openSlotIndex, setOpenSlotIndex] = useState(null);
+  const [isShaking, setIsShaking] = useState(false);
+  const prevGameStatusRef = useRef(gameStatus);
+  const prevGuessesCountRef = useRef(guesses.length);
+
+  // Trigger shake animation & audio/haptic/toast warning on invalid submit
+  const triggerInvalidSubmit = useCallback(() => {
+    setIsShaking(true);
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate([30, 40, 30]);
+    }
+    toast.warning(
+      'Incomplete Guess',
+      `Please fill all ${stintCount || 4} slots before submitting.`
+    );
+    announce(`Please fill all ${stintCount || 4} slots before submitting.`);
+    setTimeout(() => {
+      setIsShaking(false);
+    }, 500);
+  }, [stintCount, announce]);
+
+  // Handle guess submission with validation
+  const handleAttemptSubmit = useCallback(() => {
+    const allFilled =
+      currentGuess.length === stintCount && currentGuess.every((t) => t !== null);
+    if (allFilled) {
+      submitGuess();
+    } else {
+      triggerInvalidSubmit();
+    }
+  }, [currentGuess, stintCount, submitGuess, triggerInvalidSubmit]);
+
+  // Clear latest non-locked slot via keyboard Backspace
+  const handleClearLastSlot = useCallback(() => {
+    const lastFeedback = feedback.length > 0 ? feedback[feedback.length - 1] : null;
+    for (let i = currentGuess.length - 1; i >= 0; i--) {
+      if (currentGuess[i]) {
+        if (lastFeedback && lastFeedback[i] === FEEDBACK.CORRECT) {
+          continue;
+        }
+        clearSlot(i);
+        break;
+      }
+    }
+  }, [currentGuess, feedback, clearSlot]);
+
+  // Announce puzzle load to screen readers
   useEffect(() => {
-    // Only automatically pop up the game over modal if transitioning from active playing to won/lost during this session
+    if (puzzleId && player?.name) {
+      announce(
+        `JourneyMan puzzle #${puzzleNumber} loaded for ${player.name}. Difficulty is ${difficulty}, with ${stintCount} career stints to guess.`
+      );
+    }
+  }, [puzzleId, puzzleNumber, player?.name, difficulty, stintCount, announce]);
+
+  // Announce guess results or game over
+  useEffect(() => {
+    if (guesses.length > prevGuessesCountRef.current && feedback.length > 0) {
+      const latestFeedback = feedback[feedback.length - 1];
+      const correctCount = latestFeedback.filter((f) => f === FEEDBACK.CORRECT).length;
+      const misplacedCount = latestFeedback.filter((f) => f === FEEDBACK.MISPLACED).length;
+      const incorrectCount = latestFeedback.filter((f) => f === FEEDBACK.INCORRECT).length;
+
+      if (gameStatus === 'won') {
+        announce(`Congratulations! You solved the puzzle in ${guesses.length} attempts.`);
+      } else if (gameStatus === 'lost') {
+        announce(`Game over. Better luck tomorrow.`);
+      } else {
+        announce(
+          `Guess ${guesses.length} graded: ${correctCount} correct, ${misplacedCount} misplaced, ${incorrectCount} incorrect. ${
+            (maxAttempts ?? MAX_ATTEMPTS) - guesses.length
+          } attempts remaining.`
+        );
+      }
+    }
+    prevGuessesCountRef.current = guesses.length;
+  }, [guesses.length, feedback, gameStatus, maxAttempts, announce]);
+
+  // Automatically show Game Over modal on win/loss
+  useEffect(() => {
     if (
       (gameStatus === 'won' || gameStatus === 'lost') &&
       prevGameStatusRef.current === 'playing'
@@ -65,10 +154,56 @@ export default function App() {
     prevGameStatusRef.current = gameStatus;
   }, [gameStatus]);
 
+  // Connectivity alerts (online/offline)
+  useEffect(() => {
+    const handleOnline = () => {
+      toast.success('Connection Restored', 'You are back online.');
+    };
+    const handleOffline = () => {
+      toast.warning('Offline Mode', 'Connection lost. Your local gameplay is saved.');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Desktop keyboard shortcuts
+  const anyModalOpen =
+    showHelp || showAuthModal || showHistoryModal || showGameOverModal || openSlotIndex !== null;
+
+  useKeyboardShortcuts({
+    enabled: !anyModalOpen,
+    stintCount,
+    currentGuess,
+    feedback,
+    isPlaying: gameStatus === 'playing',
+    isSubmitting,
+    onOpenSlot: (slotIdx) => setOpenSlotIndex(slotIdx),
+    onClearLastSlot: handleClearLastSlot,
+    onClearAll: clearCurrentGuess,
+    onSubmit: handleAttemptSubmit,
+    onInvalidSubmit: triggerInvalidSubmit,
+    onOpenHelp: () => setShowHelp(true),
+    onOpenHistory: () => {
+      if (user) {
+        setShowHistoryModal(true);
+      } else {
+        toast.info(
+          'Sign in to view your history',
+          'Create a free account or sign in to track your streaks, stats, and calendar history.'
+        );
+        setShowAuthModal(true);
+      }
+    },
+  });
+
   // Derived state
   const allSlotsFilled = currentGuess.length > 0 && currentGuess.every((t) => t !== null);
-  
-  // Can clear if there are any filled slots that aren't locked
   const lastFeedback = feedback.length > 0 ? feedback[feedback.length - 1] : null;
   const hasClearableSlot = currentGuess.some((t, idx) => {
     if (!t) return false;
@@ -77,25 +212,38 @@ export default function App() {
   });
 
   const isPlaying = gameStatus === 'playing';
-
-  // Scale main container comfortably on desktop for large stint counts (e.g. 7-9 stints)
   const mainWidthClass = stintCount >= 7 ? 'max-w-xl' : 'max-w-lg';
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-background text-foreground">
+    <div className="min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-amber-500 selection:text-slate-950">
+      {/* Screen Reader Live Announcements */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        data-testid="live-announcer"
+      >
+        {announcement}
+      </div>
+
       {/* Header */}
-      <Header puzzleNumber={puzzleNumber} puzzleDate={puzzleDate} />
+      <Header
+        puzzleNumber={puzzleNumber}
+        puzzleDate={puzzleDate}
+        showHelp={showHelp}
+        onHelpOpenChange={setShowHelp}
+        showAuthModal={showAuthModal}
+        onAuthOpenChange={setShowAuthModal}
+        showHistoryModal={showHistoryModal}
+        onHistoryOpenChange={setShowHistoryModal}
+      />
 
       {/* Main content */}
       <main className={cn('w-full mx-auto px-3 sm:px-4 pb-8 flex-1 flex flex-col gap-4', mainWidthClass)}>
-        {/* Initial loading state (only before puzzleId is known) */}
+        {/* Layout-stable Loading Skeleton */}
         {isLoading && !puzzleId && (
-          <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-8 shadow-2xl text-center mt-8">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-muted-foreground">Loading today's puzzle…</p>
-            </div>
-          </div>
+          <BoardSkeleton stintCount={stintCount || 4} />
         )}
 
         {/* Error state */}
@@ -129,6 +277,10 @@ export default function App() {
                 stintCount={stintCount}
                 gameStatus={gameStatus}
                 availableTeams={availableTeams}
+                isShaking={isShaking}
+                openSlotIndex={openSlotIndex}
+                onOpenSlot={(idx) => setOpenSlotIndex(idx)}
+                onCloseSlot={() => setOpenSlotIndex(null)}
                 onSelectTeam={setSlot}
                 onSwap={swapSlots}
               />
@@ -149,9 +301,9 @@ export default function App() {
                 </Button>
                 <Button
                   id="submit-guess-button"
-                  className="flex-1 bg-amber-500 text-slate-950 hover:bg-amber-400 font-semibold"
-                  onClick={submitGuess}
-                  disabled={!allSlotsFilled || isSubmitting}
+                  className="flex-1 bg-amber-500 text-slate-950 hover:bg-amber-400 font-semibold shadow-md active:scale-98 transition-transform"
+                  onClick={handleAttemptSubmit}
+                  disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>

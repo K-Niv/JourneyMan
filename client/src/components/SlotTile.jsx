@@ -39,11 +39,24 @@ export default function SlotTile({
   isRevealing,
   availableTeams,
   isActive,
+  isPickerOpen,
+  onOpenPicker,
+  onClosePicker,
   onSelectTeam,
   onSwap,
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+
+  // Controlled vs uncontrolled popover open state
+  const isPopoverOpen = isPickerOpen !== undefined ? isPickerOpen : internalOpen;
+  const handleOpenChange = (newOpen) => {
+    if (newOpen) {
+      onOpenPicker ? onOpenPicker(index) : setInternalOpen(true);
+    } else {
+      onClosePicker ? onClosePicker() : setInternalOpen(false);
+    }
+  };
 
   // Find the team object for display
   const team = teamId
@@ -72,9 +85,19 @@ export default function SlotTile({
   // --- 1. Past guess row (feedback state) ---
   if (feedback) {
     const colorClass = FEEDBACK_COLORS[feedback] ?? FEEDBACK_COLORS[FEEDBACK.INCORRECT];
+    const feedbackDescription =
+      feedback === FEEDBACK.CORRECT
+        ? 'correct'
+        : feedback === FEEDBACK.MISPLACED
+        ? 'misplaced (wrong position)'
+        : 'incorrect (not in timeline)';
+
     return (
       <div style={{ perspective: 1000 }} className="w-full aspect-square min-w-0">
         <motion.div
+          role="gridcell"
+          aria-roledescription="graded stint slot"
+          aria-label={`Slot ${index + 1}: ${team?.name || 'Unknown'} (${team?.abbreviation || '?'}), ${feedbackDescription}`}
           initial={isRevealing ? { rotateX: 90, opacity: 0 } : false}
           animate={{ rotateX: 0, opacity: 1 }}
           transition={{
@@ -83,16 +106,18 @@ export default function SlotTile({
             ease: [0.22, 1, 0.36, 1],
           }}
           className={cn(
-            'w-full aspect-square flex flex-col items-center justify-center select-none shadow-md overflow-hidden min-w-0 p-0.5',
+            'w-full aspect-square flex flex-col items-center justify-center select-none shadow-md overflow-hidden min-w-0 p-0.5 focus:outline-none',
             roundedClass,
             borderClass,
             colorClass
           )}
+          tabIndex={0}
         >
           {logoUrl && (
             <img
               src={logoUrl}
-              alt={team?.abbreviation}
+              alt=""
+              aria-hidden="true"
               className={cn('object-contain mb-0.5 opacity-95 pointer-events-none shrink-0', logoSizeClass)}
             />
           )}
@@ -108,12 +133,16 @@ export default function SlotTile({
   if (isActive && isLocked) {
     return (
       <div
+        role="gridcell"
+        aria-roledescription="locked career stint slot"
+        aria-label={`Slot ${index + 1}: ${team?.name || 'Unknown'} (${team?.abbreviation || '?'}), confirmed correct and locked`}
         className={cn(
-          'relative w-full aspect-square border-emerald-500 bg-emerald-600/90 text-white flex flex-col items-center justify-center shadow-sm ring-1 ring-emerald-400/40 select-none overflow-hidden min-w-0 p-0.5',
+          'relative w-full aspect-square border-emerald-500 bg-emerald-600/90 text-white flex flex-col items-center justify-center shadow-sm ring-1 ring-emerald-400/40 select-none overflow-hidden min-w-0 p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400',
           roundedClass,
           borderClass
         )}
         title="Locked: Confirmed correct position"
+        tabIndex={0}
       >
         <div
           className={cn(
@@ -126,7 +155,8 @@ export default function SlotTile({
         {logoUrl && (
           <img
             src={logoUrl}
-            alt={team?.abbreviation}
+            alt=""
+            aria-hidden="true"
             className={cn('object-contain mb-0.5 pointer-events-none shrink-0', logoSizeClass)}
           />
         )}
@@ -137,7 +167,7 @@ export default function SlotTile({
     );
   }
 
-  // --- 3. Active row - Unlocked editable slot (with Drag and Drop) ---
+  // --- 3. Active row - Unlocked editable slot (with Drag and Drop & Keyboard Control) ---
   if (isActive) {
     const handleDragStart = (e) => {
       e.dataTransfer.setData('text/plain', index.toString());
@@ -161,53 +191,68 @@ export default function SlotTile({
       if (sourceIndexStr !== '') {
         const sourceIndex = parseInt(sourceIndexStr, 10);
         if (!isNaN(sourceIndex) && sourceIndex !== index && onSwap) {
+          if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(15);
+          }
           onSwap(sourceIndex, index);
         }
       }
     };
 
     return (
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={isPopoverOpen} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <button
             type="button"
+            id={`slot-tile-${index}`}
             draggable={!!team}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={cn(
-              'w-full aspect-square flex flex-col items-center justify-center transition-all duration-200 cursor-pointer select-none overflow-hidden min-w-0 p-0.5',
+              'w-full aspect-square flex flex-col items-center justify-center transition-all duration-200 cursor-pointer select-none overflow-hidden min-w-0 p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 active:scale-95',
               roundedClass,
               borderClass,
-              // Neutral styling when filled before submission (NO yellow border)
               team
                 ? 'border-slate-600 bg-slate-800/90 hover:bg-slate-700/80 text-slate-100 cursor-grab active:cursor-grabbing shadow-sm'
                 : 'border-dashed border-slate-700 bg-slate-900/40 hover:bg-slate-800/60 hover:border-slate-500 text-slate-500',
               isDragOver && 'ring-2 ring-amber-400 border-amber-400 bg-slate-700'
             )}
-            aria-label={team ? `Slot ${index + 1}: ${team.name}. Drag to rearrange or click to change.` : `Select team for slot ${index + 1}`}
+            aria-roledescription="career stint slot"
+            aria-label={
+              team
+                ? `Slot ${index + 1}: ${team.name} (${team.abbreviation}). Press ${index + 1} or click to change, drag to rearrange.`
+                : `Slot ${index + 1}: Empty. Press ${index + 1} or click to select a team.`
+            }
           >
             {team ? (
-              <>
+              <motion.div
+                key={team.id}
+                initial={{ scale: 0.9, opacity: 0.8 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                className="w-full h-full flex flex-col items-center justify-center min-w-0"
+              >
                 {logoUrl && (
                   <img
                     src={logoUrl}
-                    alt={team.abbreviation}
+                    alt=""
+                    aria-hidden="true"
                     className={cn('object-contain mb-0.5 pointer-events-none shrink-0', logoSizeClass)}
                   />
                 )}
                 <span className={cn('text-slate-100 truncate max-w-full text-center', textSizeClass)}>
                   {team.abbreviation}
                 </span>
-              </>
+              </motion.div>
             ) : (
               <span className={cn('font-light text-slate-500', isLargeStint ? 'text-sm sm:text-base' : 'text-lg sm:text-xl')}>+</span>
             )}
           </button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-72 p-0 border-slate-800 bg-slate-950 shadow-2xl"
+          className="w-72 sm:w-80 p-0 border-slate-800 bg-slate-950 shadow-2xl z-50"
           align="center"
           sideOffset={8}
         >
@@ -215,8 +260,11 @@ export default function SlotTile({
             teams={availableTeams}
             slotIndex={index}
             onSelect={(selectedTeamId) => {
+              if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                navigator.vibrate(12);
+              }
               onSelectTeam(index, selectedTeamId);
-              setOpen(false);
+              handleOpenChange(false);
             }}
           />
         </PopoverContent>
@@ -227,6 +275,8 @@ export default function SlotTile({
   // --- 4. Future placeholder row (clean empty box) ---
   return (
     <div
+      role="gridcell"
+      aria-label={`Slot ${index + 1}: Upcoming attempt placeholder`}
       className={cn(
         'w-full aspect-square border-slate-800/40 bg-slate-900/20 min-w-0',
         roundedClass,

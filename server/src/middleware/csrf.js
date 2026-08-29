@@ -36,10 +36,12 @@ export function generateCsrfToken() {
  * Prevents client-side script access (XSS mitigation).
  */
 export function getAuthCookieOptions() {
+  const sameSite = config.cookieSameSite || (config.isProd ? 'lax' : 'lax');
+  const secure = config.isProd || sameSite === 'none';
   return {
     httpOnly: true,
-    secure: config.isProd,
-    sameSite: config.isProd ? 'strict' : 'lax',
+    secure,
+    sameSite,
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   };
@@ -50,10 +52,12 @@ export function getAuthCookieOptions() {
  * Readable by client JS so it can be extracted and sent in request headers.
  */
 export function getCsrfCookieOptions() {
+  const sameSite = config.cookieSameSite || (config.isProd ? 'lax' : 'lax');
+  const secure = config.isProd || sameSite === 'none';
   return {
     httpOnly: false,
-    secure: config.isProd,
-    sameSite: config.isProd ? 'strict' : 'lax',
+    secure,
+    sameSite,
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   };
@@ -79,17 +83,19 @@ export function setAuthCookies(res, authToken) {
  * @param {import('express').Response} res
  */
 export function clearAuthCookies(res) {
+  const authOpts = getAuthCookieOptions();
+  const csrfOpts = getCsrfCookieOptions();
   res.clearCookie(AUTH_COOKIE_NAME, {
-    httpOnly: true,
-    secure: config.isProd,
-    sameSite: config.isProd ? 'strict' : 'lax',
-    path: '/',
+    httpOnly: authOpts.httpOnly,
+    secure: authOpts.secure,
+    sameSite: authOpts.sameSite,
+    path: authOpts.path,
   });
   res.clearCookie(CSRF_COOKIE_NAME, {
-    httpOnly: false,
-    secure: config.isProd,
-    sameSite: config.isProd ? 'strict' : 'lax',
-    path: '/',
+    httpOnly: csrfOpts.httpOnly,
+    secure: csrfOpts.secure,
+    sameSite: csrfOpts.sameSite,
+    path: csrfOpts.path,
   });
 }
 

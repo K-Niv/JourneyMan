@@ -63,8 +63,8 @@ export class ApiError extends Error {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-const rawBase = import.meta.env?.VITE_API_BASE_URL || '/api';
-const BASE = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
+const rawBase = (import.meta.env?.VITE_API_BASE_URL || '/api').trim().replace(/\/+$/, '');
+const BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 
 /**
  * Extract XSRF-TOKEN cookie from document.cookie.

@@ -84,7 +84,7 @@ Ensure you have the following credentials ready before deploying:
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist` (default)
 5. Expand **Environment Variables** and add:
-   - `VITE_API_BASE_URL` = `https://journeyman-api.onrender.com/api` (Replace with your actual Render API URL)
+   - `VITE_API_BASE_URL` = `https://journeyman-api.onrender.com/api` (Both `https://journeyman-api.onrender.com` and `https://journeyman-api.onrender.com/api` are supported)
 6. Click **Deploy**.
 7. Once deployed, copy your production Vercel domain (e.g., `https://journeyman-game.vercel.app`).
 

@@ -34,28 +34,28 @@ export default function ToastContainer() {
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.22, ease: 'easeOut' }}
               className={cn(
-                'pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border backdrop-blur-xl shadow-2xl transition-all',
-                isSuccess && 'bg-slate-950/95 border-emerald-500/40 text-slate-100 shadow-emerald-500/10',
-                isWarning && 'bg-slate-950/95 border-amber-500/40 text-slate-100 shadow-amber-500/10',
-                isError && 'bg-slate-950/95 border-red-500/40 text-slate-100 shadow-red-500/10',
-                !isSuccess && !isWarning && !isError && 'bg-slate-950/95 border-slate-700 text-slate-100'
+                'pointer-events-auto flex items-start gap-3 p-3.5 rounded-none border-2 border-[#0F0024] bg-white text-[#212121] shadow-brutal transition-all font-sans',
+                isSuccess && 'border-emerald-700 bg-emerald-50 text-emerald-950 shadow-[3px_3px_0px_#065F46]',
+                isWarning && 'border-[#DAAE4F] bg-[#FFFBEB] text-[#78350F] shadow-[3px_3px_0px_#DAAE4F]',
+                isError && 'border-red-700 bg-red-50 text-red-950 shadow-[3px_3px_0px_#991B1B]',
+                !isSuccess && !isWarning && !isError && 'border-[#0F0024] bg-white text-[#0F0024]'
               )}
             >
               {/* Icon */}
               <div className="mt-0.5 shrink-0">
-                {isSuccess && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-                {isWarning && <AlertTriangle className="w-5 h-5 text-amber-400" />}
-                {isError && <AlertCircle className="w-5 h-5 text-red-400" />}
-                {!isSuccess && !isWarning && !isError && <Info className="w-5 h-5 text-sky-400" />}
+                {isSuccess && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
+                {isWarning && <AlertTriangle className="w-5 h-5 text-[#B45309]" />}
+                {isError && <AlertCircle className="w-5 h-5 text-red-600" />}
+                {!isSuccess && !isWarning && !isError && <Info className="w-5 h-5 text-[#0F0024]" />}
               </div>
 
               {/* Message Content */}
               <div className="flex-1 min-w-0 pr-1">
-                <p className="text-sm font-semibold text-slate-100 leading-tight">
+                <p className="text-sm font-bold text-[#0F0024] leading-tight font-poeltl">
                   {t.message}
                 </p>
                 {t.description && (
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  <p className="text-xs text-[#5A5A5A] mt-1 leading-relaxed">
                     {t.description}
                   </p>
                 )}
@@ -65,7 +65,7 @@ export default function ToastContainer() {
               <button
                 type="button"
                 onClick={() => removeToast(t.id)}
-                className="text-slate-400 hover:text-slate-200 transition-colors p-0.5 rounded-md hover:bg-slate-800/60 shrink-0"
+                className="text-[#0F0024] hover:bg-[#0F0024]/10 transition-colors p-0.5 rounded-[2px] shrink-0"
                 aria-label="Dismiss notification"
               >
                 <X className="w-4 h-4" />

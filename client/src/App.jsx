@@ -1,10 +1,14 @@
 /**
  * client/src/App.jsx
  * ===================
- * Root application component.
+ * Root application component for JourneyMan.
  *
- * PR 07: Game board with feedback animations, submit integration,
- * locked slots, and game over modal with career timeline and countdown.
+ * Features:
+ * - Poeltl-inspired light theme & brand identity
+ * - Multi-view support: Daily Puzzle Game, Modern Landing Page, Dedicated Auth Page
+ * - Top navigation bar with live status and mobile menu
+ * - Accessible keyboard shortcuts & live screen reader announcements
+ * - Locked stints, drag-and-drop feedback grid, and game-over modals
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -19,6 +23,8 @@ import { cn } from '@/lib/utils';
 
 // Components
 import Header from '@/components/Header';
+import LandingPage from '@/components/LandingPage';
+import AuthPage from '@/components/AuthPage';
 import PlayerInfo from '@/components/PlayerInfo';
 import GuessGrid from '@/components/GuessGrid';
 import GameOverModal from '@/components/GameOverModal';
@@ -30,6 +36,9 @@ import { Eraser, Send, Loader2, Trophy } from 'lucide-react';
 export default function App() {
   const { isLoading, error } = usePuzzleLoader();
   const { announce, announcement } = useLiveAnnouncer();
+
+  // Navigation view state: 'landing' (default landing page) | 'game' | 'auth'
+  const [currentView, setCurrentView] = useState('landing');
 
   // Game state
   const puzzleId = useGameStore((s) => s.puzzleId);
@@ -172,12 +181,12 @@ export default function App() {
     };
   }, []);
 
-  // Desktop keyboard shortcuts
+  // Desktop keyboard shortcuts (active only during gameplay)
   const anyModalOpen =
     showHelp || showAuthModal || showHistoryModal || showGameOverModal || openSlotIndex !== null;
 
   useKeyboardShortcuts({
-    enabled: !anyModalOpen,
+    enabled: !anyModalOpen && currentView === 'game',
     stintCount,
     currentGuess,
     feedback,
@@ -214,7 +223,7 @@ export default function App() {
   const mainWidthClass = stintCount >= 7 ? 'max-w-xl' : 'max-w-lg';
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-background text-foreground selection:bg-amber-500 selection:text-slate-950">
+    <div className="min-h-screen flex flex-col items-center bg-[#F5ECDF] text-[#212121] selection:bg-[#DAAE4F] selection:text-[#0F0024] font-sans">
       {/* Screen Reader Live Announcements */}
       <div
         role="status"
@@ -226,10 +235,12 @@ export default function App() {
         {announcement}
       </div>
 
-      {/* Header */}
+      {/* Modern Navigation Bar Header */}
       <Header
         puzzleNumber={puzzleNumber}
         puzzleDate={puzzleDate}
+        activeView={currentView}
+        onNavigate={setCurrentView}
         showHelp={showHelp}
         onHelpOpenChange={setShowHelp}
         showAuthModal={showAuthModal}
@@ -238,142 +249,158 @@ export default function App() {
         onHistoryOpenChange={setShowHistoryModal}
       />
 
-      {/* Main content */}
-      <main className={cn('w-full mx-auto px-3 sm:px-4 pb-8 flex-1 flex flex-col gap-4', mainWidthClass)}>
-        {/* Layout-stable Loading Skeleton */}
-        {isLoading && !puzzleId && (
-          <BoardSkeleton stintCount={stintCount || 4} />
-        )}
+      {/* ===================================================================== */}
+      {/* VIEW 1: LANDING PAGE */}
+      {/* ===================================================================== */}
+      {currentView === 'landing' && (
+        <LandingPage
+          onPlay={() => setCurrentView('game')}
+          onOpenHelp={() => setShowHelp(true)}
+          onOpenAuth={() => setShowAuthModal(true)}
+          puzzleNumber={puzzleNumber}
+          puzzleDate={puzzleDate}
+        />
+      )}
 
-        {/* Error state */}
-        {error && !puzzleId && (
-          <div className="bg-red-950/50 border border-red-500/20 rounded-2xl p-6 shadow-2xl mt-8">
-            <p className="text-xs text-red-400 font-medium uppercase tracking-wider mb-1">
-              Notice
-            </p>
-            <p className="text-sm text-red-300">{error}</p>
-          </div>
-        )}
+      {/* ===================================================================== */}
+      {/* VIEW 2: DEDICATED AUTH PAGE */}
+      {/* ===================================================================== */}
+      {currentView === 'auth' && (
+        <AuthPage
+          onBack={() => setCurrentView('game')}
+          onPlay={() => setCurrentView('game')}
+        />
+      )}
 
-        {/* Game loaded */}
-        {puzzleId && (
-          <>
-            {/* Player info card */}
-            <PlayerInfo
-              player={player}
-              difficulty={difficulty}
-              stintCount={stintCount}
-              guessesUsed={guesses.length}
-              maxAttempts={maxAttempts ?? MAX_ATTEMPTS}
-            />
+      {/* ===================================================================== */}
+      {/* VIEW 3: DAILY GAMEPLAY BOARD */}
+      {/* ===================================================================== */}
+      {currentView === 'game' && (
+        <main className={cn('w-full mx-auto px-3 sm:px-4 pt-4 sm:pt-6 pb-12 flex-1 flex flex-col gap-4', mainWidthClass)}>
+          {/* Layout-stable Loading Skeleton */}
+          {isLoading && !puzzleId && (
+            <BoardSkeleton stintCount={stintCount || 4} />
+          )}
 
-            {/* Guess grid */}
-            <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl">
-              <GuessGrid
-                guesses={guesses}
-                feedback={feedback}
-                currentGuess={currentGuess}
-                stintCount={stintCount}
-                gameStatus={gameStatus}
-                availableTeams={availableTeams}
-                isShaking={isShaking}
-                openSlotIndex={openSlotIndex}
-                onOpenSlot={(idx) => setOpenSlotIndex(idx)}
-                onCloseSlot={() => setOpenSlotIndex(null)}
-                onSelectTeam={setSlot}
-                onSwap={swapSlots}
-              />
+          {/* Error state */}
+          {error && !puzzleId && (
+            <div className="bg-red-50 border-2 border-red-700 p-6 shadow-brutal mt-6">
+              <p className="text-xs text-red-700 font-bold uppercase tracking-wider mb-1 font-poeltl">
+                Game Board Notice
+              </p>
+              <p className="text-sm text-red-950 font-semibold">{error}</p>
             </div>
+          )}
 
-            {/* Action buttons */}
-            {isPlaying && (
-              <div className="flex items-center gap-3">
-                <Button
-                  id="clear-guess-button"
-                  variant="outline"
-                  className="flex-1 border-slate-700 text-slate-400 hover:text-foreground hover:bg-slate-800"
-                  onClick={clearCurrentGuess}
-                  disabled={!hasClearableSlot || isSubmitting}
-                >
-                  <Eraser className="w-4 h-4 mr-2" />
-                  Clear
-                </Button>
-                <Button
-                  id="submit-guess-button"
-                  className="flex-1 bg-amber-500 text-slate-950 hover:bg-amber-400 font-semibold shadow-md active:scale-98 transition-transform"
-                  onClick={handleAttemptSubmit}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Checking…
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 mr-2" />
-                      Submit Guess
-                    </>
-                  )}
-                </Button>
+          {/* Game loaded */}
+          {puzzleId && (
+            <>
+              {/* Player info card */}
+              <PlayerInfo
+                player={player}
+                difficulty={difficulty}
+                stintCount={stintCount}
+                guessesUsed={guesses.length}
+                maxAttempts={maxAttempts ?? MAX_ATTEMPTS}
+              />
+
+              {/* Guess grid */}
+              <div className="bg-white border-2 border-[#0F0024] p-4 sm:p-5 shadow-brutal">
+                <GuessGrid
+                  guesses={guesses}
+                  feedback={feedback}
+                  currentGuess={currentGuess}
+                  stintCount={stintCount}
+                  gameStatus={gameStatus}
+                  availableTeams={availableTeams}
+                  isShaking={isShaking}
+                  openSlotIndex={openSlotIndex}
+                  onOpenSlot={(idx) => setOpenSlotIndex(idx)}
+                  onCloseSlot={() => setOpenSlotIndex(null)}
+                  onSelectTeam={setSlot}
+                  onSwap={swapSlots}
+                />
               </div>
-            )}
 
-            {/* Game over status card on board */}
-            {!isPlaying && (gameStatus === 'won' || gameStatus === 'lost') && (
-              <div
-                className={cn(
-                  'rounded-2xl p-5 text-center shadow-2xl border flex flex-col items-center gap-3',
-                  gameStatus === 'won'
-                    ? 'bg-emerald-950/40 border-emerald-500/30'
-                    : 'bg-slate-900/80 border-slate-800'
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{gameStatus === 'won' ? '🎉' : '😔'}</span>
-                  <h3
-                    className={cn(
-                      'text-lg font-bold',
-                      gameStatus === 'won' ? 'text-emerald-400' : 'text-slate-200'
-                    )}
+              {/* Action buttons */}
+              {isPlaying && (
+                <div className="flex items-center gap-3">
+                  <Button
+                    id="clear-guess-button"
+                    variant="secondary"
+                    className="flex-1 border-2 border-[#DAAE4F] text-[#0F0024] bg-white hover:bg-[#DAAE4F]/10 font-bold shadow-brutal-sm rounded-[2px]"
+                    onClick={clearCurrentGuess}
+                    disabled={!hasClearableSlot || isSubmitting}
                   >
-                    {gameStatus === 'won'
-                      ? `Solved in ${guesses.length}/${maxAttempts ?? MAX_ATTEMPTS} guesses!`
-                      : 'Game Over — Better luck tomorrow!'}
-                  </h3>
+                    <Eraser className="w-4 h-4 mr-2" />
+                    Clear
+                  </Button>
+                  <Button
+                    id="submit-guess-button"
+                    variant="primary"
+                    className="flex-1 bg-[#DAAE4F] text-[#0F0024] hover:bg-[#cda245] font-extrabold shadow-brutal hover:shadow-brutal-lg rounded-[2px] active:scale-98 transition-transform uppercase tracking-wider text-sm"
+                    onClick={handleAttemptSubmit}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Checking…
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Submit Guess
+                      </>
+                    )}
+                  </Button>
                 </div>
-                <Button
-                  id="view-results-button"
-                  variant="outline"
-                  className={cn(
-                    'w-full max-w-xs font-semibold',
-                    gameStatus === 'won'
-                      ? 'border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300'
-                      : 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200'
-                  )}
-                  onClick={() => setShowGameOverModal(true)}
-                >
-                  <Trophy className="w-4 h-4 mr-2" />
-                  View Results & Timeline
-                </Button>
-              </div>
-            )}
+              )}
 
-            {/* GameOverModal */}
-            <GameOverModal
-              open={showGameOverModal}
-              onOpenChange={setShowGameOverModal}
-              gameStatus={gameStatus}
-              player={player}
-              difficulty={difficulty}
-              guessesCount={guesses.length}
-              maxAttempts={maxAttempts ?? MAX_ATTEMPTS}
-              answer={answer}
-              puzzleNumber={puzzleNumber}
-            />
-          </>
-        )}
-      </main>
+              {/* Game over status card on board */}
+              {!isPlaying && (gameStatus === 'won' || gameStatus === 'lost') && (
+                <div
+                  className={cn(
+                    'p-5 text-center shadow-brutal border-2 border-[#0F0024] flex flex-col items-center gap-3',
+                    gameStatus === 'won' ? 'bg-emerald-50' : 'bg-white'
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{gameStatus === 'won' ? '🎉' : '😔'}</span>
+                    <h3 className="text-lg sm:text-xl font-extrabold text-[#0F0024] font-poeltl uppercase">
+                      {gameStatus === 'won'
+                        ? `Solved in ${guesses.length}/${maxAttempts ?? MAX_ATTEMPTS} guesses!`
+                        : 'Game Over — Better luck tomorrow!'}
+                    </h3>
+                  </div>
+                  <Button
+                    id="view-results-button"
+                    variant="primary"
+                    className="w-full max-w-xs font-extrabold bg-[#DAAE4F] text-[#0F0024] shadow-brutal hover:shadow-brutal-lg rounded-[2px] uppercase tracking-wider"
+                    onClick={() => setShowGameOverModal(true)}
+                  >
+                    <Trophy className="w-4 h-4 mr-2" />
+                    View Results & Timeline
+                  </Button>
+                </div>
+              )}
+
+              {/* GameOverModal */}
+              <GameOverModal
+                open={showGameOverModal}
+                onOpenChange={setShowGameOverModal}
+                gameStatus={gameStatus}
+                player={player}
+                difficulty={difficulty}
+                guessesCount={guesses.length}
+                maxAttempts={maxAttempts ?? MAX_ATTEMPTS}
+                answer={answer}
+                puzzleNumber={puzzleNumber}
+              />
+            </>
+          )}
+        </main>
+      )}
 
       {/* Global Toast Notifications */}
       <ToastContainer />

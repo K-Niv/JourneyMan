@@ -19,22 +19,22 @@ const DIFFICULTY_CONFIG = {
   [DIFFICULTY.EASY]: {
     emoji: '🟢',
     label: 'Easy',
-    className: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/15',
+    className: 'bg-emerald-100 text-emerald-900 border-2 border-emerald-700',
   },
   [DIFFICULTY.MEDIUM]: {
     emoji: '🟡',
     label: 'Medium',
-    className: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/25 hover:bg-yellow-500/15',
+    className: 'bg-amber-100 text-amber-900 border-2 border-amber-600',
   },
   [DIFFICULTY.HARD]: {
     emoji: '🔴',
     label: 'Hard',
-    className: 'bg-red-500/15 text-red-400 border-red-500/25 hover:bg-red-500/15',
+    className: 'bg-red-100 text-red-900 border-2 border-red-700',
   },
   [DIFFICULTY.EXPERT]: {
     emoji: '💀',
     label: 'Expert',
-    className: 'bg-purple-500/15 text-purple-400 border-purple-500/25 hover:bg-purple-500/15',
+    className: 'bg-purple-100 text-purple-900 border-2 border-purple-700',
   },
 };
 
@@ -50,13 +50,13 @@ export default function PlayerInfo({
 
   return (
     <div
-      className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl transition-all"
+      className="bg-white border-2 border-[#0F0024] p-4 sm:p-5 shadow-brutal transition-all font-sans"
       role="region"
       aria-label="Mystery Player Profile"
     >
       <div className="flex items-start gap-3.5 sm:gap-4">
         {/* Player image */}
-        <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 border-slate-700 bg-slate-800 shadow-lg">
+        <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 border-2 border-[#0F0024] bg-[#F5ECDF] shadow-brutal-sm overflow-hidden">
           {player?.imageUrl ? (
             <>
               {!imageLoaded && (
@@ -83,11 +83,11 @@ export default function PlayerInfo({
         {/* Player info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <h2 className="text-lg sm:text-2xl font-extrabold text-foreground truncate tracking-tight">
+            <h2 className="text-lg sm:text-2xl font-extrabold text-[#0F0024] truncate tracking-tight font-poeltl">
               {player?.name ?? 'Mystery Player'}
             </h2>
             {diffConfig && (
-              <Badge className={cn('shrink-0 text-xs py-0.5', diffConfig.className)}>
+              <Badge className={cn('shrink-0 text-xs py-0.5 rounded-none font-bold', diffConfig.className)}>
                 <span className="mr-1">{diffConfig.emoji}</span>
                 {diffConfig.label}
               </Badge>
@@ -97,17 +97,17 @@ export default function PlayerInfo({
           {/* Stats row */}
           <div className="flex items-center gap-4 mt-2 sm:mt-3">
             <div className="text-center">
-              <p className="text-base sm:text-lg font-bold text-amber-400">{stintCount}</p>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+              <p className="text-base sm:text-lg font-extrabold text-[#0F0024] font-poeltl">{stintCount}</p>
+              <p className="text-[9px] sm:text-[10px] text-[#5A5A5A] uppercase tracking-wider font-bold">
                 Stints
               </p>
             </div>
-            <div className="w-px h-7 sm:h-8 bg-slate-800" />
+            <div className="w-px h-7 sm:h-8 bg-[#0F0024]/20" />
             <div className="text-center">
-              <p className="text-base sm:text-lg font-bold text-amber-400">
+              <p className="text-base sm:text-lg font-extrabold text-[#0F0024] font-poeltl">
                 {guessesUsed}/{maxAttempts}
               </p>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+              <p className="text-[9px] sm:text-[10px] text-[#5A5A5A] uppercase tracking-wider font-bold">
                 Guesses
               </p>
             </div>

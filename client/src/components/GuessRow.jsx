@@ -46,7 +46,7 @@ export default function GuessRow({
     >
       {/* Row number indicator */}
       <div className="w-5 sm:w-6 shrink-0 text-center" aria-hidden="true">
-        <span className="text-[11px] sm:text-xs font-mono text-muted-foreground font-semibold">
+        <span className="text-[11px] sm:text-xs font-mono text-[#0F0024] font-bold font-poeltl">
           {rowNumber}
         </span>
       </div>

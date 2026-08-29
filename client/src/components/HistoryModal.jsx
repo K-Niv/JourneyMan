@@ -38,30 +38,30 @@ function StatsSkeleton() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-lg space-y-2"
+            className="bg-[#F5ECDF] border-2 border-[#0F0024] p-3.5 flex flex-col items-center justify-center text-center shadow-brutal-sm space-y-2"
           >
-            <Skeleton className="h-7 w-12 rounded" />
-            <Skeleton className="h-3 w-14 rounded" />
+            <Skeleton className="h-7 w-12 rounded-none bg-slate-300" />
+            <Skeleton className="h-3 w-14 rounded-none bg-slate-300" />
           </div>
         ))}
       </div>
 
       {/* Avg attempts pill skeleton */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900/60 border border-slate-800/60 rounded-lg">
-        <Skeleton className="h-4 w-40 rounded" />
-        <Skeleton className="h-4 w-12 rounded" />
+      <div className="flex items-center justify-between px-4 py-2.5 bg-[#F5ECDF] border-2 border-[#0F0024]">
+        <Skeleton className="h-4 w-40 rounded-none bg-slate-300" />
+        <Skeleton className="h-4 w-12 rounded-none bg-slate-300" />
       </div>
 
       {/* Guess distribution skeleton */}
       <div className="space-y-3 pt-1">
         <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-32 rounded" />
+          <Skeleton className="h-4 w-32 rounded-none bg-slate-300" />
         </div>
         <div className="space-y-2.5">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex items-center gap-2.5">
-              <Skeleton className="w-3 h-4 rounded shrink-0" />
-              <Skeleton className="flex-1 h-6 rounded-md bg-slate-900/80" />
+              <Skeleton className="w-3 h-4 rounded-none bg-slate-300 shrink-0" />
+              <Skeleton className="flex-1 h-6 rounded-none bg-[#F5ECDF] border border-[#0F0024]" />
             </div>
           ))}
         </div>
@@ -78,23 +78,23 @@ function CalendarSkeleton() {
     <div data-testid="calendar-skeleton" className="space-y-4 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <Skeleton className="h-5 w-32 rounded" />
+        <Skeleton className="h-5 w-32 rounded-none bg-slate-300" />
         <div className="flex items-center gap-1">
-          <Skeleton className="h-8 w-8 rounded-full" />
-          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-8 w-8 rounded-none bg-slate-300" />
+          <Skeleton className="h-8 w-8 rounded-none bg-slate-300" />
         </div>
       </div>
 
       {/* Grid */}
-      <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 sm:p-4">
+      <div className="bg-[#F5ECDF] border-2 border-[#0F0024] p-3 sm:p-4 shadow-brutal-sm">
         <div className="grid grid-cols-7 gap-1 sm:gap-1.5 mb-2">
           {Array.from({ length: 7 }).map((_, i) => (
-            <Skeleton key={i} className="h-3 w-6 mx-auto rounded" />
+            <Skeleton key={i} className="h-3 w-6 mx-auto rounded-none bg-slate-300" />
           ))}
         </div>
         <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
           {Array.from({ length: 35 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square rounded-lg bg-slate-900/50" />
+            <Skeleton key={i} className="aspect-square rounded-none bg-white border border-[#0F0024]/20" />
           ))}
         </div>
       </div>
@@ -162,28 +162,28 @@ export default function HistoryModal({ open, onOpenChange }) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         id="history-modal"
-        className="w-full max-w-md bg-slate-950/95 border-slate-800 text-slate-100 p-5 sm:p-6 rounded-2xl shadow-2xl backdrop-blur-xl max-h-[90vh] flex flex-col gap-4 overflow-hidden"
+        className="w-full max-w-md bg-white border-2 border-[#0F0024] text-[#212121] p-5 sm:p-6 rounded-none shadow-brutal max-h-[90vh] flex flex-col gap-4 overflow-hidden font-sans"
       >
         <DialogHeader className="space-y-1 text-center shrink-0">
-          <DialogTitle className="text-xl sm:text-2xl font-extrabold tracking-tight font-display bg-gradient-to-r from-amber-400 via-orange-400 to-red-500 bg-clip-text text-transparent">
+          <DialogTitle className="text-xl sm:text-2xl font-extrabold tracking-tight font-poeltl text-[#0F0024] uppercase">
             Your Journey
           </DialogTitle>
-          <DialogDescription className="text-xs text-slate-400">
+          <DialogDescription className="text-xs text-[#5A5A5A]">
             Track your puzzle record, win streaks, and monthly stats.
           </DialogDescription>
         </DialogHeader>
 
         {/* Tab switchers */}
-        <div className="flex bg-slate-900/90 p-1 rounded-xl border border-slate-800 shrink-0">
+        <div className="flex bg-[#F5ECDF] p-1 border-2 border-[#0F0024] shrink-0">
           <button
             type="button"
             id="history-stats-tab"
             onClick={() => setActiveTab('stats')}
             className={cn(
-              'flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5',
+              'flex-1 py-1.5 px-3 rounded-none text-xs font-bold font-poeltl uppercase tracking-wider transition-all flex items-center justify-center gap-1.5',
               activeTab === 'stats'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#DAAE4F] text-[#0F0024] border border-[#0F0024] shadow-brutal-sm'
+                : 'text-[#0F0024] hover:bg-[#DAAE4F]/20'
             )}
           >
             <BarChart3 className="w-3.5 h-3.5" />
@@ -194,10 +194,10 @@ export default function HistoryModal({ open, onOpenChange }) {
             id="history-calendar-tab"
             onClick={() => setActiveTab('calendar')}
             className={cn(
-              'flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5',
+              'flex-1 py-1.5 px-3 rounded-none text-xs font-bold font-poeltl uppercase tracking-wider transition-all flex items-center justify-center gap-1.5',
               activeTab === 'calendar'
-                ? 'bg-amber-500 text-slate-950 shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#DAAE4F] text-[#0F0024] border border-[#0F0024] shadow-brutal-sm'
+                : 'text-[#0F0024] hover:bg-[#DAAE4F]/20'
             )}
           >
             <CalendarIcon className="w-3.5 h-3.5" />
@@ -214,14 +214,14 @@ export default function HistoryModal({ open, onOpenChange }) {
               <CalendarSkeleton />
             )
           ) : error ? (
-            <div className="h-64 flex flex-col items-center justify-center gap-3 text-center p-4 bg-red-950/20 border border-red-500/20 rounded-xl">
-              <AlertCircle className="w-8 h-8 text-red-400" />
-              <p className="text-xs text-red-300">{error}</p>
+            <div className="h-64 flex flex-col items-center justify-center gap-3 text-center p-4 bg-red-50 border-2 border-red-700 text-red-900">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+              <p className="text-xs font-semibold">{error}</p>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={loadData}
-                className="text-xs border-slate-700 hover:bg-slate-800"
+                className="text-xs border-2 border-[#0F0024] bg-white font-bold"
               >
                 Try Again
               </Button>

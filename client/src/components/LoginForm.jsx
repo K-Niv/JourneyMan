@@ -1,7 +1,7 @@
 /**
  * client/src/components/LoginForm.jsx
  * ====================================
- * Controlled form for user login.
+ * Controlled form for user login with Poeltl brand system.
  */
 
 import { useState } from 'react';
@@ -46,19 +46,19 @@ export default function LoginForm({ onSuccess }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-2">
       {displayedError && (
-        <div className="flex items-center gap-2 p-3 text-xs bg-red-950/40 border border-red-500/30 text-red-300 rounded-lg">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
-          <span>{displayedError}</span>
+        <div className="flex items-center gap-2 p-3 text-xs bg-red-50 border-2 border-red-700 text-red-900 shadow-brutal-sm">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+          <span className="font-semibold">{displayedError}</span>
         </div>
       )}
 
       {/* Email Input */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-300 block">
+        <label className="text-xs font-bold text-[#0F0024] uppercase tracking-wider block font-poeltl">
           Email Address
         </label>
         <div className="relative">
-          <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Mail className="w-4 h-4 text-[#5A5A5A] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             id="login-email-input"
             type="email"
@@ -73,18 +73,18 @@ export default function LoginForm({ onSuccess }) {
             }}
             placeholder="you@example.com"
             disabled={isAuthLoading}
-            className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-colors disabled:opacity-50"
+            className="w-full bg-white border-2 border-[#0F0024] rounded-none pl-9 pr-3.5 py-2.5 text-sm text-[#212121] placeholder:text-[#5A5A5A]/60 shadow-brutal-sm focus:outline-none focus:ring-2 focus:ring-[#DAAE4F] transition-colors disabled:opacity-50 font-sans"
           />
         </div>
       </div>
 
       {/* Password Input */}
       <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-300 block">
+        <label className="text-xs font-bold text-[#0F0024] uppercase tracking-wider block font-poeltl">
           Password
         </label>
         <div className="relative">
-          <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Lock className="w-4 h-4 text-[#5A5A5A] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             id="login-password-input"
             type="password"
@@ -99,7 +99,7 @@ export default function LoginForm({ onSuccess }) {
             }}
             placeholder="••••••••"
             disabled={isAuthLoading}
-            className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-colors disabled:opacity-50"
+            className="w-full bg-white border-2 border-[#0F0024] rounded-none pl-9 pr-3.5 py-2.5 text-sm text-[#212121] placeholder:text-[#5A5A5A]/60 shadow-brutal-sm focus:outline-none focus:ring-2 focus:ring-[#DAAE4F] transition-colors disabled:opacity-50 font-sans"
           />
         </div>
       </div>
@@ -108,8 +108,9 @@ export default function LoginForm({ onSuccess }) {
       <Button
         id="login-submit-button"
         type="submit"
+        variant="primary"
         disabled={isAuthLoading}
-        className="w-full bg-amber-500 text-slate-950 hover:bg-amber-400 font-bold py-2.5 rounded-xl shadow-lg shadow-amber-500/10 transition-all mt-2"
+        className="w-full bg-[#DAAE4F] text-[#0F0024] hover:bg-[#cda245] font-extrabold py-3 rounded-[2px] shadow-brutal hover:shadow-brutal-lg transition-all mt-3 tracking-wider uppercase text-sm"
       >
         {isAuthLoading ? (
           <>

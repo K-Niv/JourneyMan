@@ -25,9 +25,9 @@ import { Lock } from 'lucide-react';
  * Background colors for each feedback type.
  */
 const FEEDBACK_COLORS = {
-  [FEEDBACK.CORRECT]: 'bg-emerald-500 border-emerald-400 text-white',
-  [FEEDBACK.MISPLACED]: 'bg-amber-500 border-amber-400 text-white',
-  [FEEDBACK.INCORRECT]: 'bg-red-600 border-red-500 text-white',
+  [FEEDBACK.CORRECT]: 'bg-emerald-600 border-2 border-[#0F0024] text-white shadow-brutal-sm',
+  [FEEDBACK.MISPLACED]: 'bg-[#DAAE4F] border-2 border-[#0F0024] text-[#0F0024] font-extrabold shadow-brutal-sm',
+  [FEEDBACK.INCORRECT]: 'bg-red-600 border-2 border-[#0F0024] text-white shadow-brutal-sm',
 };
 
 export default function SlotTile({
@@ -69,18 +69,18 @@ export default function SlotTile({
   const isLargeStint = stintCount >= 7;
   const isMediumStint = stintCount >= 5 && stintCount < 7;
 
-  const roundedClass = isLargeStint ? 'rounded-lg' : 'rounded-xl';
-  const borderClass = isLargeStint ? 'border' : 'border-2';
+  const roundedClass = 'rounded-none';
+  const borderClass = 'border-2 border-[#0F0024]';
   const logoSizeClass = isLargeStint
     ? 'w-3.5 h-3.5 sm:w-4.5 sm:h-4.5'
     : isMediumStint
     ? 'w-4.5 h-4.5 sm:w-5.5 sm:h-5.5'
     : 'w-6 h-6 sm:w-7 sm:h-7';
   const textSizeClass = isLargeStint
-    ? 'text-[8px] sm:text-[10px] font-bold leading-none tracking-tighter'
+    ? 'text-[8px] sm:text-[10px] font-bold leading-none tracking-tighter font-poeltl'
     : isMediumStint
-    ? 'text-[10px] sm:text-xs font-bold leading-tight'
-    : 'text-xs sm:text-sm font-bold';
+    ? 'text-[10px] sm:text-xs font-bold leading-tight font-poeltl'
+    : 'text-xs sm:text-sm font-extrabold font-poeltl';
 
   // --- 1. Past guess row (feedback state) ---
   if (feedback) {
@@ -106,9 +106,8 @@ export default function SlotTile({
             ease: [0.22, 1, 0.36, 1],
           }}
           className={cn(
-            'w-full aspect-square flex flex-col items-center justify-center select-none shadow-md overflow-hidden min-w-0 p-0.5 focus:outline-none',
+            'w-full aspect-square flex flex-col items-center justify-center select-none overflow-hidden min-w-0 p-0.5 focus:outline-none',
             roundedClass,
-            borderClass,
             colorClass
           )}
           tabIndex={0}
@@ -137,20 +136,19 @@ export default function SlotTile({
         aria-roledescription="locked career stint slot"
         aria-label={`Slot ${index + 1}: ${team?.name || 'Unknown'} (${team?.abbreviation || '?'}), confirmed correct and locked`}
         className={cn(
-          'relative w-full aspect-square border-emerald-500 bg-emerald-600/90 text-white flex flex-col items-center justify-center shadow-sm ring-1 ring-emerald-400/40 select-none overflow-hidden min-w-0 p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400',
-          roundedClass,
-          borderClass
+          'relative w-full aspect-square bg-emerald-600 border-2 border-[#0F0024] text-white flex flex-col items-center justify-center shadow-brutal-sm select-none overflow-hidden min-w-0 p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0F0024]',
+          roundedClass
         )}
         title="Locked: Confirmed correct position"
         tabIndex={0}
       >
         <div
           className={cn(
-            'absolute bg-emerald-800/80 rounded-full',
+            'absolute bg-[#0F0024] text-[#DAAE4F] rounded-none border border-[#DAAE4F]',
             isLargeStint ? 'top-0.5 right-0.5 p-0.5' : 'top-1 right-1 p-0.5'
           )}
         >
-          <Lock className={cn('text-emerald-100', isLargeStint ? 'w-2 h-2' : 'w-2.5 h-2.5')} />
+          <Lock className={cn('text-[#DAAE4F]', isLargeStint ? 'w-2 h-2' : 'w-2.5 h-2.5')} />
         </div>
         {logoUrl && (
           <img
@@ -211,13 +209,12 @@ export default function SlotTile({
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={cn(
-              'w-full aspect-square flex flex-col items-center justify-center transition-all duration-200 cursor-pointer select-none overflow-hidden min-w-0 p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 active:scale-95',
+              'w-full aspect-square flex flex-col items-center justify-center transition-all duration-150 cursor-pointer select-none overflow-hidden min-w-0 p-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAE4F] active:scale-95',
               roundedClass,
-              borderClass,
               team
-                ? 'border-slate-600 bg-slate-800/90 hover:bg-slate-700/80 text-slate-100 cursor-grab active:cursor-grabbing shadow-sm'
-                : 'border-dashed border-slate-700 bg-slate-900/40 hover:bg-slate-800/60 hover:border-slate-500 text-slate-500',
-              isDragOver && 'ring-2 ring-amber-400 border-amber-400 bg-slate-700'
+                ? 'border-2 border-[#0F0024] bg-white hover:bg-[#F5ECDF] text-[#0F0024] cursor-grab active:cursor-grabbing shadow-brutal-sm'
+                : 'border-2 border-dashed border-[#0F0024]/40 bg-[#F5ECDF]/60 hover:bg-white hover:border-[#0F0024] text-[#0F0024]/60',
+              isDragOver && 'ring-2 ring-[#DAAE4F] border-[#0F0024] bg-[#DAAE4F]/20'
             )}
             aria-roledescription="career stint slot"
             aria-label={
@@ -242,17 +239,17 @@ export default function SlotTile({
                     className={cn('object-contain mb-0.5 pointer-events-none shrink-0', logoSizeClass)}
                   />
                 )}
-                <span className={cn('text-slate-100 truncate max-w-full text-center', textSizeClass)}>
+                <span className={cn('text-[#0F0024] truncate max-w-full text-center', textSizeClass)}>
                   {team.abbreviation}
                 </span>
               </motion.div>
             ) : (
-              <span className={cn('font-light text-slate-500', isLargeStint ? 'text-sm sm:text-base' : 'text-lg sm:text-xl')}>+</span>
+              <span className={cn('font-bold text-[#0F0024]/70', isLargeStint ? 'text-sm sm:text-base' : 'text-lg sm:text-xl')}>+</span>
             )}
           </button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-72 sm:w-80 p-0 border-slate-800 bg-slate-950 shadow-2xl z-50"
+          className="w-72 sm:w-80 p-0 border-2 border-[#0F0024] bg-white shadow-brutal rounded-none z-50"
           align="center"
           sideOffset={8}
         >
@@ -278,9 +275,7 @@ export default function SlotTile({
       role="gridcell"
       aria-label={`Slot ${index + 1}: Upcoming attempt placeholder`}
       className={cn(
-        'w-full aspect-square border-slate-800/40 bg-slate-900/20 min-w-0',
-        roundedClass,
-        borderClass
+        'w-full aspect-square border-2 border-[#0F0024]/15 bg-white/40 min-w-0 rounded-none'
       )}
     />
   );

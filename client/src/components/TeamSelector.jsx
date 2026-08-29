@@ -24,18 +24,18 @@ import { getTeamLogo } from '@/data/teamLogos';
 export default function TeamSelector({ teams = [], onSelect, slotIndex }) {
   return (
     <Command
-      className="rounded-xl border border-slate-800 bg-slate-950 text-slate-100 shadow-2xl overflow-hidden"
+      className="rounded-none border-2 border-[#0F0024] bg-white text-[#212121] shadow-brutal overflow-hidden font-sans"
       aria-label={`Select team for slot ${(slotIndex ?? 0) + 1}`}
     >
-      <div className="border-b border-slate-800/80">
+      <div className="border-b-2 border-[#0F0024] bg-[#F5ECDF]">
         <CommandInput
           placeholder="Search 30 NBA teams…"
-          className="text-foreground text-sm h-11"
+          className="text-[#0F0024] text-sm h-11 font-sans placeholder:text-[#5A5A5A]"
           autoFocus
         />
       </div>
-      <CommandList className="max-h-64 sm:max-h-72 overflow-y-auto p-1.5 scrollbar-thin scrollbar-thumb-slate-800">
-        <CommandEmpty className="text-muted-foreground text-xs py-6 text-center">
+      <CommandList className="max-h-64 sm:max-h-72 overflow-y-auto p-1.5">
+        <CommandEmpty className="text-[#5A5A5A] text-xs py-6 text-center font-bold">
           No matching NBA team found.
         </CommandEmpty>
         <CommandGroup>
@@ -46,7 +46,7 @@ export default function TeamSelector({ teams = [], onSelect, slotIndex }) {
                 key={team.id}
                 value={`${team.name} ${team.abbreviation}`}
                 onSelect={() => onSelect(team.id)}
-                className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] cursor-pointer rounded-lg hover:bg-slate-900 active:bg-slate-800 transition-colors"
+                className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] cursor-pointer rounded-none hover:bg-[#DAAE4F]/20 active:bg-[#DAAE4F]/30 transition-colors border-b border-[#0F0024]/10 last:border-b-0"
                 role="option"
                 aria-label={`${team.name} (${team.abbreviation})`}
               >
@@ -61,8 +61,8 @@ export default function TeamSelector({ teams = [], onSelect, slotIndex }) {
                       loading="lazy"
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
-                      <span className="text-[8px] font-bold text-slate-400">
+                    <div className="w-6 h-6 rounded-none bg-[#F5ECDF] border border-[#0F0024] flex items-center justify-center">
+                      <span className="text-[8px] font-bold text-[#0F0024]">
                         {team.abbreviation}
                       </span>
                     </div>
@@ -70,12 +70,12 @@ export default function TeamSelector({ teams = [], onSelect, slotIndex }) {
                 </div>
 
                 {/* Team name */}
-                <span className="flex-1 text-sm font-medium text-foreground truncate">
+                <span className="flex-1 text-sm font-bold text-[#0F0024] truncate font-poeltl">
                   {team.name}
                 </span>
 
                 {/* Abbreviation badge */}
-                <span className="text-[10px] font-bold text-slate-400 bg-slate-900 border border-slate-800 px-2 py-0.5 rounded font-mono">
+                <span className="text-[10px] font-bold text-[#0F0024] bg-[#DAAE4F]/30 border border-[#0F0024] px-2 py-0.5 rounded-none font-mono">
                   {team.abbreviation}
                 </span>
               </CommandItem>

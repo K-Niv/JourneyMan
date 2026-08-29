@@ -46,22 +46,22 @@ export default function NextPuzzleCountdown() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-900/50 border border-slate-800/80">
-      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-        <Clock className="w-3.5 h-3.5 text-amber-400" />
+    <div className="flex flex-col items-center justify-center p-3.5 rounded-none bg-[#F5ECDF] border-2 border-[#0F0024] shadow-brutal-sm font-sans">
+      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#0F0024] mb-2 font-poeltl">
+        <Clock className="w-3.5 h-3.5 text-[#0F0024]" />
         <span>Next Puzzle In</span>
       </div>
 
-      <div className="flex items-center gap-1 text-xl sm:text-2xl font-mono font-bold tracking-widest text-amber-400">
-        <span className="bg-slate-800/90 px-2 py-0.5 rounded-lg border border-slate-700/60 shadow-sm">
+      <div className="flex items-center gap-1.5 text-xl sm:text-2xl font-mono font-bold tracking-widest text-[#0F0024]">
+        <span className="bg-white px-2.5 py-1 rounded-none border-2 border-[#0F0024] shadow-brutal-sm">
           {timeLeft.hours}
         </span>
-        <span className="text-slate-500 animate-pulse">:</span>
-        <span className="bg-slate-800/90 px-2 py-0.5 rounded-lg border border-slate-700/60 shadow-sm">
+        <span className="text-[#0F0024] font-extrabold">:</span>
+        <span className="bg-white px-2.5 py-1 rounded-none border-2 border-[#0F0024] shadow-brutal-sm">
           {timeLeft.minutes}
         </span>
-        <span className="text-slate-500 animate-pulse">:</span>
-        <span className="bg-slate-800/90 px-2 py-0.5 rounded-lg border border-slate-700/60 shadow-sm">
+        <span className="text-[#0F0024] font-extrabold">:</span>
+        <span className="bg-white px-2.5 py-1 rounded-none border-2 border-[#0F0024] shadow-brutal-sm">
           {timeLeft.seconds}
         </span>
       </div>

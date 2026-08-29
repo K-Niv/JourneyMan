@@ -1,7 +1,7 @@
 /**
  * client/src/components/AuthModal.jsx
  * ====================================
- * Modal dialog for user authentication (Sign In & Register).
+ * Modal dialog for user authentication (Sign In & Register) with Poeltl brand system.
  *
  * Uses shadcn Dialog with tabbed switching between LoginForm and RegisterForm.
  */
@@ -43,17 +43,17 @@ export default function AuthModal({ open, onOpenChange, initialMode = 'login' })
         if (onOpenChange) onOpenChange(isOpen);
       }}
     >
-      <DialogContent className="max-w-sm sm:max-w-md bg-slate-950/95 backdrop-blur-xl border-slate-800 text-slate-100 p-6 rounded-2xl shadow-2xl">
+      <DialogContent className="max-w-sm sm:max-w-md bg-white border-2 border-[#0F0024] text-[#212121] p-6 rounded-none shadow-brutal">
         <DialogHeader className="text-left space-y-1">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400">
+            <div className="p-1.5 bg-[#DAAE4F] border border-[#0F0024] text-[#0F0024] shadow-brutal-sm">
               <Sparkles className="w-4 h-4" />
             </div>
-            <DialogTitle className="text-xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+            <DialogTitle className="text-xl font-extrabold text-[#0F0024] font-poeltl uppercase tracking-wide">
               {tab === 'login' ? 'Welcome Back' : 'Join JourneyMan'}
             </DialogTitle>
           </div>
-          <DialogDescription className="text-xs text-slate-400">
+          <DialogDescription className="text-xs text-[#5A5A5A]">
             {tab === 'login'
               ? 'Sign in to sync your stats and streaks across devices.'
               : 'Create an account to track your daily stats, streaks, and solve history.'}
@@ -61,16 +61,16 @@ export default function AuthModal({ open, onOpenChange, initialMode = 'login' })
         </DialogHeader>
 
         {/* Tab Toggle */}
-        <div className="flex bg-slate-900/90 p-1 rounded-xl border border-slate-800 mt-2">
+        <div className="flex bg-[#F5ECDF] p-1 border-2 border-[#0F0024] mt-2">
           <button
             type="button"
             id="auth-tab-login"
             onClick={() => handleTabChange('login')}
             className={cn(
-              'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all',
+              'flex-1 py-1.5 text-xs font-bold font-poeltl tracking-wider uppercase transition-all',
               tab === 'login'
-                ? 'bg-slate-800 text-amber-400 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#DAAE4F] text-[#0F0024] border border-[#0F0024] shadow-brutal-sm'
+                : 'text-[#0F0024] hover:bg-[#DAAE4F]/20'
             )}
           >
             Sign In
@@ -80,10 +80,10 @@ export default function AuthModal({ open, onOpenChange, initialMode = 'login' })
             id="auth-tab-register"
             onClick={() => handleTabChange('register')}
             className={cn(
-              'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all',
+              'flex-1 py-1.5 text-xs font-bold font-poeltl tracking-wider uppercase transition-all',
               tab === 'register'
-                ? 'bg-slate-800 text-amber-400 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#DAAE4F] text-[#0F0024] border border-[#0F0024] shadow-brutal-sm'
+                : 'text-[#0F0024] hover:bg-[#DAAE4F]/20'
             )}
           >
             Create Account

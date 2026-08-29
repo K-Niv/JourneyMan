@@ -1,6 +1,8 @@
 /**
- * shadcn/ui Button component
- * @see https://ui.shadcn.com/docs/components/button
+ * client/src/components/ui/button.jsx
+ * =====================================
+ * Poeltl-inspired Button component with primary (#DAAE4F), secondary (#FFFFFF / #DAAE4F border),
+ * outline, ghost, and destructive variants with 2px border radius.
  */
 
 import * as React from 'react';
@@ -9,22 +11,30 @@ import { cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-[2px] text-sm font-bold tracking-tight transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAE4F] focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50 select-none cursor-pointer',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+        default:
+          'bg-[#DAAE4F] text-[#0F0024] border border-[#0F0024]/20 hover:bg-[#cda245] active:translate-y-[1px] shadow-sm',
+        primary:
+          'bg-[#DAAE4F] text-[#0F0024] border border-[#0F0024]/20 hover:bg-[#cda245] active:translate-y-[1px] shadow-sm',
+        secondary:
+          'bg-[#FFFFFF] text-[#0F0024] border-2 border-[#DAAE4F] hover:bg-[#DAAE4F]/10 active:translate-y-[1px]',
+        outline:
+          'border-2 border-[#0F0024] bg-transparent text-[#0F0024] hover:bg-[#0F0024]/5 active:translate-y-[1px]',
+        ghost:
+          'text-[#0F0024] hover:bg-[#0F0024]/10 active:bg-[#0F0024]/15',
+        destructive:
+          'bg-red-600 text-white hover:bg-red-700 active:translate-y-[1px]',
+        link:
+          'text-[#0F0024] underline-offset-4 hover:underline hover:text-[#DAAE4F]',
       },
       size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-md px-3',
-        lg: 'h-11 rounded-md px-8',
-        icon: 'h-10 w-10',
+        sm: 'h-8 rounded-[2px] px-3 text-xs',
+        lg: 'h-12 rounded-[2px] px-6 text-base',
+        icon: 'h-9 w-9 p-0',
       },
     },
     defaultVariants: {

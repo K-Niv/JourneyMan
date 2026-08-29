@@ -33,10 +33,10 @@ const MONTH_NAMES = [
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 const DIFFICULTY_CONFIG = {
-  [DIFFICULTY.EASY]: { label: 'Easy', emoji: '🟢', bg: 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30' },
-  [DIFFICULTY.MEDIUM]: { label: 'Medium', emoji: '🟡', bg: 'bg-amber-950/60 text-amber-300 border-amber-500/30' },
-  [DIFFICULTY.HARD]: { label: 'Hard', emoji: '🔴', bg: 'bg-rose-950/60 text-rose-300 border-rose-500/30' },
-  [DIFFICULTY.EXPERT]: { label: 'Expert', emoji: '💀', bg: 'bg-purple-950/60 text-purple-300 border-purple-500/30' },
+  [DIFFICULTY.EASY]: { label: 'Easy', emoji: '🟢', bg: 'bg-emerald-100 text-emerald-900 border-2 border-emerald-700' },
+  [DIFFICULTY.MEDIUM]: { label: 'Medium', emoji: '🟡', bg: 'bg-amber-100 text-amber-900 border-2 border-amber-600' },
+  [DIFFICULTY.HARD]: { label: 'Hard', emoji: '🔴', bg: 'bg-rose-100 text-rose-900 border-2 border-rose-700' },
+  [DIFFICULTY.EXPERT]: { label: 'Expert', emoji: '💀', bg: 'bg-purple-100 text-purple-900 border-2 border-purple-700' },
 };
 
 export default function CalendarGrid({
@@ -93,12 +93,12 @@ export default function CalendarGrid({
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-sans">
       {/* Month Navigator Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="w-4 h-4 text-amber-400" />
-          <h3 className="font-bold text-sm sm:text-base text-slate-100 font-display">
+          <CalendarIcon className="w-4 h-4 text-[#0F0024]" />
+          <h3 className="font-extrabold text-sm sm:text-base text-[#0F0024] font-poeltl uppercase">
             {MONTH_NAMES[month - 1]} {year}
           </h3>
         </div>
@@ -106,7 +106,7 @@ export default function CalendarGrid({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-30"
+            className="h-8 w-8 rounded-none border border-[#0F0024] text-[#0F0024] hover:bg-[#DAAE4F]/20 disabled:opacity-30"
             onClick={handlePrevMonth}
             disabled={!canGoPrev || isLoading}
             aria-label="Previous month"
@@ -116,7 +116,7 @@ export default function CalendarGrid({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-full text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-30"
+            className="h-8 w-8 rounded-none border border-[#0F0024] text-[#0F0024] hover:bg-[#DAAE4F]/20 disabled:opacity-30"
             onClick={handleNextMonth}
             disabled={isLoading}
             aria-label="Next month"
@@ -127,13 +127,13 @@ export default function CalendarGrid({
       </div>
 
       {/* Calendar Grid Container */}
-      <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 sm:p-4 shadow-inner">
+      <div className="bg-[#F5ECDF] border-2 border-[#0F0024] p-3 sm:p-4 shadow-brutal-sm">
         {/* Day-of-week header */}
         <div className="grid grid-cols-7 gap-1 sm:gap-1.5 text-center mb-2">
           {WEEKDAYS.map((d) => (
             <span
               key={d}
-              className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider"
+              className="text-[11px] font-bold text-[#0F0024] uppercase tracking-wider font-poeltl"
             >
               {d}
             </span>
@@ -144,7 +144,7 @@ export default function CalendarGrid({
         <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
           {/* Leading blank slots */}
           {blanks.map((b) => (
-            <div key={`blank-${b}`} className="aspect-square rounded-lg p-1" />
+            <div key={`blank-${b}`} className="aspect-square p-1" />
           ))}
 
           {/* Month day slots */}
@@ -181,33 +181,32 @@ export default function CalendarGrid({
                   }
                 }}
                 className={cn(
-                  'aspect-square min-h-[40px] sm:min-h-[44px] rounded-lg p-1 flex flex-col items-center justify-between text-xs transition-all relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
+                  'aspect-square min-h-[40px] sm:min-h-[44px] rounded-none p-1 flex flex-col items-center justify-between text-xs transition-all relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAE4F] border',
                   // Base styling
                   isFuture
-                    ? 'opacity-25 cursor-default bg-slate-900/20 text-slate-600'
+                    ? 'opacity-30 cursor-default bg-transparent text-[#5A5A5A] border-transparent'
                     : result
-                    ? 'cursor-pointer hover:scale-105 active:scale-95 shadow-sm'
-                    : 'cursor-default bg-slate-900/40 text-slate-400',
+                    ? 'cursor-pointer hover:scale-105 active:scale-95 shadow-brutal-sm'
+                    : 'cursor-default bg-white/40 text-[#5A5A5A] border-[#0F0024]/20',
 
                   // Won vs Lost vs Unplayed
                   isWon &&
-                    'bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 hover:bg-emerald-950/70',
+                    'bg-emerald-600 border-2 border-[#0F0024] text-white hover:bg-emerald-700',
                   isLost &&
-                    'bg-red-950/50 border border-red-500/40 text-red-200 hover:bg-red-950/70',
-                  !result && !isFuture && 'border border-slate-800/40',
+                    'bg-red-600 border-2 border-[#0F0024] text-white hover:bg-red-700',
 
                   // Today indicator
-                  isToday && 'ring-2 ring-amber-500/80 ring-offset-1 ring-offset-slate-950 font-bold',
+                  isToday && 'ring-2 ring-[#0F0024] ring-offset-1 ring-offset-[#F5ECDF] font-extrabold',
 
                   // Selected item
-                  isSelected && 'ring-2 ring-amber-400 shadow-lg scale-105 z-10'
+                  isSelected && 'ring-2 ring-[#DAAE4F] shadow-brutal scale-105 z-10'
                 )}
               >
                 {/* Day number */}
                 <span
                   className={cn(
-                    'text-[10px] sm:text-xs font-semibold leading-none self-start',
-                    isToday ? 'text-amber-400 font-extrabold' : 'text-slate-300'
+                    'text-[10px] sm:text-xs font-bold leading-none self-start',
+                    isWon || isLost ? 'text-white' : isToday ? 'text-[#0F0024] font-extrabold' : 'text-[#0F0024]'
                   )}
                 >
                   {d}
@@ -216,7 +215,7 @@ export default function CalendarGrid({
                 {/* Status indicator inside cell */}
                 {isWon && (
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] font-bold text-emerald-400 font-mono">
+                    <span className="text-[10px] font-extrabold text-white font-mono">
                       {result.attempts}/6
                     </span>
                   </div>
@@ -224,14 +223,14 @@ export default function CalendarGrid({
 
                 {isLost && (
                   <div className="flex flex-col items-center">
-                    <span className="text-[10px] font-bold text-rose-400 font-mono">
+                    <span className="text-[10px] font-extrabold text-white font-mono">
                       X
                     </span>
                   </div>
                 )}
 
                 {!result && !isFuture && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-800/80 mb-0.5" />
+                  <div className="w-1.5 h-1.5 bg-[#0F0024]/30 mb-0.5" />
                 )}
               </button>
             );
@@ -241,17 +240,17 @@ export default function CalendarGrid({
 
       {/* Selected Day Details Preview Card */}
       {selectedResult && (
-        <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 shadow-xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="bg-white border-2 border-[#0F0024] p-3.5 shadow-brutal flex items-center justify-between gap-3 animate-in fade-in duration-150">
           <div className="space-y-1 min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-slate-400 font-semibold">
+              <span className="text-xs font-mono text-[#5A5A5A] font-bold">
                 Puzzle #{selectedResult.puzzleNumber} · {selectedResult.date}
               </span>
               {selectedResult.difficulty && (
                 <Badge
                   variant="outline"
                   className={cn(
-                    'text-[10px] px-1.5 py-0 h-4 border uppercase font-bold tracking-wider',
+                    'text-[10px] px-1.5 py-0 h-4 border uppercase font-bold tracking-wider rounded-none',
                     DIFFICULTY_CONFIG[selectedResult.difficulty]?.bg
                   )}
                 >
@@ -260,20 +259,20 @@ export default function CalendarGrid({
                 </Badge>
               )}
             </div>
-            <p className="text-sm font-bold text-slate-100 truncate">
+            <p className="text-sm font-extrabold text-[#0F0024] truncate font-poeltl">
               {selectedResult.playerName}
             </p>
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
             {selectedResult.won ? (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-950/60 border border-emerald-500/30 rounded-lg text-emerald-400 text-xs font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 border border-emerald-700 text-emerald-900 text-xs font-bold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
                 <span>{selectedResult.attempts}/6 Guesses</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-950/60 border border-red-500/30 rounded-lg text-red-400 text-xs font-semibold">
-                <XCircle className="w-3.5 h-3.5" />
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-100 border border-red-700 text-red-900 text-xs font-bold">
+                <XCircle className="w-3.5 h-3.5 text-red-700" />
                 <span>Unsolved</span>
               </div>
             )}

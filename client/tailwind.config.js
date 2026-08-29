@@ -8,8 +8,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Outfit', 'sans-serif'],
+        sans: ['"Chakra Petch"', 'Inter', 'sans-serif'],
+        display: ['"Chakra Petch"', 'sans-serif'],
+        mono: ['"Chakra Petch"', 'monospace'],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -17,6 +18,14 @@ export default {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        poeltl: {
+          bg: '#F5ECDF',
+          dark: '#0F0024',
+          gold: '#DAAE4F',
+          text: '#212121',
+          muted: '#5A5A5A',
+          card: '#FFFFFF',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -47,9 +56,20 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+        none: '0px',
+        DEFAULT: '0px',
+        sm: '0px',
+        md: '2px',
+        lg: '2px',
+        xl: '4px',
+        full: '9999px',
+      },
+      boxShadow: {
+        'brutal': '3px 3px 0px #0F0024',
+        'brutal-sm': '2px 2px 0px #0F0024',
+        'brutal-lg': '5px 5px 0px #0F0024',
+        'brutal-gold': '4px 4px 0px #DAAE4F',
+        'brutal-gold-sm': '2px 2px 0px #DAAE4F',
       },
       keyframes: {
         'accordion-down': {

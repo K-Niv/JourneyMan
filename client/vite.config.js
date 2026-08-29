@@ -21,6 +21,26 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-radix': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-tooltip',
+          ],
+          'vendor-icons': ['lucide-react'],
+          'vendor-confetti': ['canvas-confetti'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
   test: {
     environment: 'jsdom',
   },

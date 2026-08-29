@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
-import React from 'react';
 import AnswerTimeline from './AnswerTimeline';
 import NextPuzzleCountdown from './NextPuzzleCountdown';
 import GameOverModal from './GameOverModal';

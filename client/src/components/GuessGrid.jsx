@@ -9,7 +9,6 @@
  *  3. Empty placeholder rows (remaining attempts)
  */
 
-import React from 'react';
 import GuessRow from './GuessRow';
 import { useGameStore } from '@/stores/gameStore';
 import { MAX_ATTEMPTS } from 'shared';

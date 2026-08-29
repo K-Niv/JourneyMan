@@ -7,7 +7,6 @@
  * Contains: objective, feedback color legend, difficulty tiers, and tips.
  */
 
-import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -42,7 +41,7 @@ export default function HowToPlayModal({ open, onOpenChange }) {
             How to Play
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Guess the NBA player's career timeline in 6 tries.
+            Guess the NBA player&apos;s career timeline in 6 tries.
           </DialogDescription>
         </DialogHeader>
 
@@ -167,7 +166,7 @@ export default function HowToPlayModal({ open, onOpenChange }) {
             className="w-full border-slate-800 hover:bg-slate-900 text-slate-200 font-semibold"
             onClick={() => onOpenChange(false)}
           >
-            Got it, let's play!
+            Got it, let&apos;s play!
           </Button>
         </div>
       </DialogContent>

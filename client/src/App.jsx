@@ -7,7 +7,7 @@
  * locked slots, and game over modal with career timeline and countdown.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePuzzleLoader } from './hooks/usePuzzleLoader.js';
 import { useGameStore } from './stores/gameStore.js';
 import { useAuthStore } from './stores/authStore.js';
@@ -203,7 +203,6 @@ export default function App() {
   });
 
   // Derived state
-  const allSlotsFilled = currentGuess.length > 0 && currentGuess.every((t) => t !== null);
   const lastFeedback = feedback.length > 0 ? feedback[feedback.length - 1] : null;
   const hasClearableSlot = currentGuess.some((t, idx) => {
     if (!t) return false;

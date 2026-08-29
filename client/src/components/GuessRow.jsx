@@ -9,7 +9,6 @@
  *  - Empty (future): clean empty placeholder tiles
  */
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import SlotTile from './SlotTile';
 import { FEEDBACK } from 'shared';

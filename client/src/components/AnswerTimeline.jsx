@@ -6,7 +6,6 @@
  * Rendered within the GameOverModal upon puzzle completion (win or loss).
  */
 
-import React from 'react';
 import { getTeamLogo } from '@/data/teamLogos';
 
 export default function AnswerTimeline({ answer }) {

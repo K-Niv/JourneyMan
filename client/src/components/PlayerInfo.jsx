@@ -5,7 +5,7 @@
  * difficulty badge, and key stats (stint count, guesses remaining).
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DIFFICULTY } from 'shared';

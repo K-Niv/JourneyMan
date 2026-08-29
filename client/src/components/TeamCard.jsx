@@ -5,7 +5,6 @@
  * Shows team logo, full name, and abbreviation.
  */
 
-import React from 'react';
 import { CommandItem } from '@/components/ui/command';
 import { getTeamLogo } from '@/data/teamLogos';
 

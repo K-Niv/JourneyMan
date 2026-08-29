@@ -12,7 +12,7 @@
  *  - Live NextPuzzleCountdown
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
   Dialog,

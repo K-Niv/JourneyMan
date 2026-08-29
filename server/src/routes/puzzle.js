@@ -16,6 +16,7 @@
 import { Router } from 'express';
 import { anonymousUser } from '../middleware/anonymousUser.js';
 import { optionalAuth } from '../middleware/auth.js';
+import { guessLimiter } from '../middleware/rateLimiter.js';
 import { getToday, postGuess } from '../controllers/puzzleController.js';
 
 const router = Router();
@@ -25,6 +26,6 @@ router.use(anonymousUser);
 router.use(optionalAuth);
 
 router.get('/today', getToday);
-router.post('/guess', postGuess);
+router.post('/guess', guessLimiter, postGuess);
 
 export default router;

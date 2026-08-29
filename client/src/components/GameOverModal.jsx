@@ -97,8 +97,8 @@ export default function GameOverModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md bg-slate-950 border-slate-800 text-foreground p-5 sm:p-6 shadow-2xl">
-        <DialogHeader className="text-center sm:text-center">
+      <DialogContent className="w-full max-w-md bg-slate-950/95 border-slate-800 text-foreground p-5 sm:p-6 rounded-2xl shadow-2xl backdrop-blur-xl max-h-[85vh] sm:max-h-[80vh] flex flex-col gap-3 overflow-hidden">
+        <DialogHeader className="text-center sm:text-center shrink-0">
           <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 border border-slate-800 text-2xl shadow-inner">
             {isWon ? '🎉' : '😔'}
           </div>
@@ -122,7 +122,7 @@ export default function GameOverModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 my-2">
+        <div className="space-y-4 my-2 flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-800">
           {/* Player Summary Card */}
           <div className="flex items-center gap-3.5 p-3 rounded-xl bg-slate-900/80 border border-slate-800">
             {player?.imageUrl ? (
@@ -163,7 +163,7 @@ export default function GameOverModal({
           <NextPuzzleCountdown />
         </div>
 
-        <div className="mt-2">
+        <div className="mt-2 shrink-0 pt-2 border-t border-slate-800/60">
           <Button
             variant="outline"
             className="w-full border-slate-800 hover:bg-slate-900 text-slate-300 font-medium"

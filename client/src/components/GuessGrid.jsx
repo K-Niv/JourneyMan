@@ -21,6 +21,10 @@ export default function GuessGrid({
   stintCount,
   gameStatus,
   availableTeams,
+  isShaking,
+  openSlotIndex,
+  onOpenSlot,
+  onCloseSlot,
   onSelectTeam,
   onSwap,
 }) {
@@ -44,6 +48,10 @@ export default function GuessGrid({
         lastFeedback={isActiveRow ? lastFeedback : null}
         isActive={isActiveRow}
         isRevealing={isRevealing}
+        isShaking={isActiveRow ? isShaking : false}
+        openSlotIndex={isActiveRow ? openSlotIndex : null}
+        onOpenSlot={onOpenSlot}
+        onCloseSlot={onCloseSlot}
         availableTeams={availableTeams}
         onSelectTeam={onSelectTeam}
         onSwap={onSwap}
@@ -52,7 +60,11 @@ export default function GuessGrid({
   }
 
   return (
-    <div className="space-y-2 sm:space-y-3">
+    <div
+      role="grid"
+      aria-label="Guess Board with 6 attempts"
+      className="space-y-2 sm:space-y-3"
+    >
       {rows}
     </div>
   );

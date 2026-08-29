@@ -161,10 +161,19 @@ export default function CalendarGrid({
             const isWon = result && result.won;
             const isLost = result && !result.won;
 
+            const ariaDayLabel = isFuture
+              ? `${MONTH_NAMES[month - 1]} ${d}, ${year}: Future date`
+              : isWon
+              ? `${MONTH_NAMES[month - 1]} ${d}, ${year}: Solved in ${result.attempts} guesses`
+              : isLost
+              ? `${MONTH_NAMES[month - 1]} ${d}, ${year}: Unsolved`
+              : `${MONTH_NAMES[month - 1]} ${d}, ${year}: Not played`;
+
             return (
               <button
                 key={dateStr}
                 type="button"
+                aria-label={ariaDayLabel}
                 disabled={isFuture || !result}
                 onClick={() => {
                   if (result) {
@@ -172,7 +181,7 @@ export default function CalendarGrid({
                   }
                 }}
                 className={cn(
-                  'aspect-square rounded-lg p-1 flex flex-col items-center justify-between text-xs transition-all relative group',
+                  'aspect-square min-h-[40px] sm:min-h-[44px] rounded-lg p-1 flex flex-col items-center justify-between text-xs transition-all relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
                   // Base styling
                   isFuture
                     ? 'opacity-25 cursor-default bg-slate-900/20 text-slate-600'

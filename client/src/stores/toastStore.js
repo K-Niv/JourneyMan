@@ -12,7 +12,7 @@ export const useToastStore = create((set, get) => ({
   /**
    * Add a toast notification.
    *
-   * @param {{ message: string, description?: string, type?: 'success' | 'info' | 'error', duration?: number }} toast
+   * @param {{ message: string, description?: string, type?: 'success' | 'info' | 'warning' | 'error', duration?: number }} toast
    */
   toast: ({ message, description, type = 'success', duration = 4000 }) => {
     const id = typeof crypto !== 'undefined' && crypto.randomUUID
@@ -52,6 +52,8 @@ export const toast = {
     useToastStore.getState().toast({ message, description, type: 'success', duration }),
   info: (message, description, duration) =>
     useToastStore.getState().toast({ message, description, type: 'info', duration }),
+  warning: (message, description, duration) =>
+    useToastStore.getState().toast({ message, description, type: 'warning', duration }),
   error: (message, description, duration) =>
     useToastStore.getState().toast({ message, description, type: 'error', duration }),
 };

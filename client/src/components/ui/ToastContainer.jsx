@@ -6,7 +6,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToastStore } from '../../stores/toastStore';
-import { CheckCircle2, Info, AlertCircle, X } from 'lucide-react';
+import { CheckCircle2, Info, AlertCircle, AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function ToastContainer() {
@@ -16,32 +16,37 @@ export default function ToastContainer() {
   return (
     <div
       aria-live="polite"
+      aria-label="Notifications"
       className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-3 sm:px-0"
     >
       <AnimatePresence>
         {toasts.map((t) => {
           const isSuccess = t.type === 'success';
+          const isWarning = t.type === 'warning';
           const isError = t.type === 'error';
 
           return (
             <motion.div
               key={t.id}
+              role="status"
               initial={{ opacity: 0, y: 16, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
               className={cn(
                 'pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl border backdrop-blur-xl shadow-2xl transition-all',
                 isSuccess && 'bg-slate-950/95 border-emerald-500/40 text-slate-100 shadow-emerald-500/10',
+                isWarning && 'bg-slate-950/95 border-amber-500/40 text-slate-100 shadow-amber-500/10',
                 isError && 'bg-slate-950/95 border-red-500/40 text-slate-100 shadow-red-500/10',
-                !isSuccess && !isError && 'bg-slate-950/95 border-slate-700 text-slate-100'
+                !isSuccess && !isWarning && !isError && 'bg-slate-950/95 border-slate-700 text-slate-100'
               )}
             >
               {/* Icon */}
               <div className="mt-0.5 shrink-0">
                 {isSuccess && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
+                {isWarning && <AlertTriangle className="w-5 h-5 text-amber-400" />}
                 {isError && <AlertCircle className="w-5 h-5 text-red-400" />}
-                {!isSuccess && !isError && <Info className="w-5 h-5 text-amber-400" />}
+                {!isSuccess && !isWarning && !isError && <Info className="w-5 h-5 text-sky-400" />}
               </div>
 
               {/* Message Content */}

@@ -10,6 +10,7 @@
  */
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import SlotTile from './SlotTile';
 import { FEEDBACK } from 'shared';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,10 @@ export default function GuessRow({
   lastFeedback,
   isActive,
   isRevealing,
+  isShaking,
+  openSlotIndex,
+  onOpenSlot,
+  onCloseSlot,
   availableTeams,
   onSelectTeam,
   onSwap,
@@ -34,11 +39,15 @@ export default function GuessRow({
       ? 'gap-1.5 sm:gap-2'
       : 'gap-1 sm:gap-1.5';
 
-  return (
-    <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+  const rowContent = (
+    <div
+      role="row"
+      aria-label={`Guess attempt ${rowNumber} of 6`}
+      className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 w-full"
+    >
       {/* Row number indicator */}
-      <div className="w-5 sm:w-6 shrink-0 text-center">
-        <span className="text-[11px] sm:text-xs font-mono text-muted-foreground">
+      <div className="w-5 sm:w-6 shrink-0 text-center" aria-hidden="true">
+        <span className="text-[11px] sm:text-xs font-mono text-muted-foreground font-semibold">
           {rowNumber}
         </span>
       </div>
@@ -69,6 +78,8 @@ export default function GuessRow({
           // Active row (current guess)
           if (isActive && currentGuess) {
             const isLocked = lastFeedback ? lastFeedback[i] === FEEDBACK.CORRECT : false;
+            const isSlotPickerOpen = openSlotIndex === i;
+
             return (
               <SlotTile
                 key={i}
@@ -79,6 +90,9 @@ export default function GuessRow({
                 isLocked={isLocked}
                 availableTeams={availableTeams}
                 isActive={true}
+                isPickerOpen={isSlotPickerOpen}
+                onOpenPicker={onOpenSlot}
+                onClosePicker={onCloseSlot}
                 onSelectTeam={onSelectTeam}
                 onSwap={onSwap}
               />
@@ -102,4 +116,23 @@ export default function GuessRow({
       </div>
     </div>
   );
+
+  // If active row and shaking, wrap in Framer Motion shake container
+  if (isActive) {
+    return (
+      <motion.div
+        animate={
+          isShaking
+            ? { x: [-10, 10, -8, 8, -5, 5, -2, 2, 0] }
+            : { x: 0 }
+        }
+        transition={{ duration: 0.45, ease: 'easeInOut' }}
+        className="w-full"
+      >
+        {rowContent}
+      </motion.div>
+    );
+  }
+
+  return rowContent;
 }

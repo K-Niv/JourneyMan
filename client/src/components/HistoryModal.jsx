@@ -20,11 +20,87 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { BarChart3, Calendar as CalendarIcon, Loader2, AlertCircle } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { BarChart3, Calendar as CalendarIcon, AlertCircle } from 'lucide-react';
 import StatsPanel from './StatsPanel';
 import CalendarGrid from './CalendarGrid';
 import { fetchStats, fetchHistory } from '../services/api';
 import { cn } from '@/lib/utils';
+
+/**
+ * Skeleton placeholder for StatsPanel during loading.
+ */
+function StatsSkeleton() {
+  return (
+    <div data-testid="stats-skeleton" className="space-y-6 animate-fade-in">
+      {/* 4 Top KPI Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-slate-900/90 border border-slate-800/80 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-lg space-y-2"
+          >
+            <Skeleton className="h-7 w-12 rounded" />
+            <Skeleton className="h-3 w-14 rounded" />
+          </div>
+        ))}
+      </div>
+
+      {/* Avg attempts pill skeleton */}
+      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900/60 border border-slate-800/60 rounded-lg">
+        <Skeleton className="h-4 w-40 rounded" />
+        <Skeleton className="h-4 w-12 rounded" />
+      </div>
+
+      {/* Guess distribution skeleton */}
+      <div className="space-y-3 pt-1">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-4 w-32 rounded" />
+        </div>
+        <div className="space-y-2.5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-2.5">
+              <Skeleton className="w-3 h-4 rounded shrink-0" />
+              <Skeleton className="flex-1 h-6 rounded-md bg-slate-900/80" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Skeleton placeholder for CalendarGrid during loading.
+ */
+function CalendarSkeleton() {
+  return (
+    <div data-testid="calendar-skeleton" className="space-y-4 animate-fade-in">
+      {/* Header */}
+      <div className="flex items-center justify-between px-1">
+        <Skeleton className="h-5 w-32 rounded" />
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-8 w-8 rounded-full" />
+        </div>
+      </div>
+
+      {/* Grid */}
+      <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-3 sm:p-4">
+        <div className="grid grid-cols-7 gap-1 sm:gap-1.5 mb-2">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <Skeleton key={i} className="h-3 w-6 mx-auto rounded" />
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
+          {Array.from({ length: 35 }).map((_, i) => (
+            <Skeleton key={i} className="aspect-square rounded-lg bg-slate-900/50" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function HistoryModal({ open, onOpenChange }) {
   const [activeTab, setActiveTab] = useState('stats'); // 'stats' | 'calendar'
@@ -132,10 +208,11 @@ export default function HistoryModal({ open, onOpenChange }) {
         {/* Modal Scrollable Body */}
         <div className="flex-1 overflow-y-auto pr-1 space-y-4 min-h-[300px]">
           {isLoading ? (
-            <div className="h-64 flex flex-col items-center justify-center gap-3 text-slate-400">
-              <Loader2 className="w-7 h-7 animate-spin text-amber-500" />
-              <p className="text-xs">Loading your stats…</p>
-            </div>
+            activeTab === 'stats' ? (
+              <StatsSkeleton />
+            ) : (
+              <CalendarSkeleton />
+            )
           ) : error ? (
             <div className="h-64 flex flex-col items-center justify-center gap-3 text-center p-4 bg-red-950/20 border border-red-500/20 rounded-xl">
               <AlertCircle className="w-8 h-8 text-red-400" />
@@ -151,6 +228,8 @@ export default function HistoryModal({ open, onOpenChange }) {
             </div>
           ) : activeTab === 'stats' ? (
             <StatsPanel stats={stats} />
+          ) : isCalendarLoading ? (
+            <CalendarSkeleton />
           ) : (
             <CalendarGrid
               results={historyResults}

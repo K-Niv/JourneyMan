@@ -5,7 +5,6 @@
  * Prevents layout shift (CLS) while today's puzzle is being fetched.
  */
 
-import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BoardSkeleton({ stintCount = 4 }) {

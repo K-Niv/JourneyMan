@@ -2,11 +2,14 @@
   "name": "shared",
   "version": "1.0.0",
   "scripts": {
-    "test": "echo \"No tests in shared package\""
+    "test": "vitest run"
   },
   "type": "module",
   "main": "constants.js",
   "exports": {
     ".": "./constants.js"
+  },
+  "devDependencies": {
+    "vitest": "^1.4.0"
   }
 }

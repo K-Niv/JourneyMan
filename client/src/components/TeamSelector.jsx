@@ -11,7 +11,6 @@
  *  - Closes on selection, calling onSelect(teamId)
  */
 
-import React from 'react';
 import {
   Command,
   CommandInput,

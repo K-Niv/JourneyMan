@@ -4,7 +4,7 @@
  * Real-time countdown timer displaying time remaining until the next daily puzzle (UTC midnight).
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 
 function calculateTimeLeft() {

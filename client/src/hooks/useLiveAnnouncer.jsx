@@ -4,7 +4,7 @@
  * Custom hook providing screen reader live announcements (aria-live="polite").
  */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 export function useLiveAnnouncer() {
   const [announcement, setAnnouncement] = useState('');

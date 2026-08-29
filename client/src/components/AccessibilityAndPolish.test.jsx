@@ -12,10 +12,8 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, cleanup, act } from '@testing-library/react';
-import React, { useState } from 'react';
 import BoardSkeleton from './BoardSkeleton';
 import SlotTile from './SlotTile';
-import GuessRow from './GuessRow';
 import TeamSelector from './TeamSelector';
 import HowToPlayModal from './HowToPlayModal';
 import ToastContainer from './ui/ToastContainer';

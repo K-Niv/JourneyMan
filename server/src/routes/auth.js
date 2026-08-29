@@ -12,6 +12,7 @@
 
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
 import {
   register,
   login,
@@ -21,9 +22,9 @@ import {
 
 const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/link', requireAuth, linkAccount);
+router.post('/register', authLimiter, register);
+router.post('/login', authLimiter, login);
+router.post('/link', authLimiter, requireAuth, linkAccount);
 router.get('/me', requireAuth, getMe);
 
 export default router;

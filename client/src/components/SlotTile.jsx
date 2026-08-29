@@ -12,7 +12,7 @@
  * 5. Future (inactive row) — subtle empty box
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import TeamSelector from './TeamSelector';

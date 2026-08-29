@@ -11,7 +11,6 @@ services:
     plan: free
     region: ohio # Match Neon database AWS region if applicable (us-east-2)
     buildCommand: npm install && npx prisma generate
-    preDeployCommand: npx prisma migrate deploy --schema=./prisma/schema.prisma
     startCommand: npm run start:server
     healthCheckPath: /api/health
     envVars:

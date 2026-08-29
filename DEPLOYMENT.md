@@ -48,7 +48,7 @@ Ensure you have the following credentials ready before deploying:
    - Paste your `DATABASE_URL` from Neon.
    - Leave `JWT_SECRET` set to auto-generate (or paste your custom key).
    - Once your frontend is created in Step 3, update `CLIENT_URL` to your Vercel URL (e.g., `https://your-app.vercel.app`).
-6. Click **Apply**. Render will build the service, run migrations, and launch your API.
+6. Click **Apply**. Render will build the service and launch your API.
 7. Note down your Render service URL (e.g., `https://journeyman-api.onrender.com`).
 
 ### Method B: Manual Web Service on Render

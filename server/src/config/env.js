@@ -7,8 +7,24 @@
  */
 
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure .env is discovered whether running from root workspace or server package
+const rootEnvPath = path.resolve(__dirname, '../../../.env');
+const serverEnvPath = path.resolve(__dirname, '../../.env');
+
+if (fs.existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+} else if (fs.existsSync(serverEnvPath)) {
+  dotenv.config({ path: serverEnvPath });
+} else {
+  dotenv.config();
+}
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const isTest = NODE_ENV === 'test';
@@ -35,6 +51,8 @@ const CLIENT_URL = process.env.CLIENT_URL || process.env.CORS_ORIGIN || '';
 const isCrossSite = isProd;
 const COOKIE_SAME_SITE = process.env.COOKIE_SAME_SITE || (isProd ? 'none' : 'lax');
 
+const REDIS_URL = process.env.REDIS_URL || '';
+
 export const config = {
   port: PORT,
   nodeEnv: NODE_ENV,
@@ -42,6 +60,7 @@ export const config = {
   isProd,
   jwtSecret: JWT_SECRET,
   databaseUrl: DATABASE_URL,
+  redisUrl: REDIS_URL,
   clientUrl: CLIENT_URL,
   isCrossSite,
   cookieSameSite: COOKIE_SAME_SITE,

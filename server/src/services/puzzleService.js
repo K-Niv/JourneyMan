@@ -16,16 +16,19 @@
 import prisma from '../lib/prisma.js';
 import { gradeGuess, isWin } from '../domain/grading.js';
 import { validateGuess } from '../domain/validation.js';
+import { getCache, setCache } from '../lib/redis.js';
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Helpers & Constants
 // ---------------------------------------------------------------------------
+
+const BASE_PUZZLE_CACHE_TTL = 48 * 3600; // 48 hours in seconds
 
 /**
  * Return today's date as a UTC "YYYY-MM-DD" string.
  * This is what the `date` column (type Date) is keyed on.
  */
-function todayUTC() {
+export function todayUTC() {
   return new Date().toISOString().slice(0, 10);
 }
 
@@ -45,25 +48,26 @@ async function findOrCreateAnonymousUser(anonymousId) {
 }
 
 // ---------------------------------------------------------------------------
-// getTodaysPuzzle
+// fetchBaseDailyPuzzle & warmDailyPuzzleCache
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch the puzzle for today (UTC date) and return the sanitised public DTO.
+ * Fetch the base puzzle definition for a specific UTC date.
+ * Checks Redis cache first; queries PostgreSQL and populates cache on miss.
  *
- * The answer (ordered team IDs) is NEVER returned here.
- * `availableTeams` is the full de-duplicated list of teams from the player's
- * career stints — client uses it to populate the team selector.
- *
- * @returns {Promise<object>} Public puzzle payload
- * @throws  If no puzzle is scheduled for today
+ * @param {string} [dateStr=todayUTC()]
+ * @returns {Promise<object|null>}
  */
-export async function getTodaysPuzzle(anonymousId = null, authenticatedUserId = null) {
-  const today = todayUTC();
+export async function fetchBaseDailyPuzzle(dateStr = todayUTC()) {
+  const cacheKey = `puzzle:daily:${dateStr}`;
+  const cached = await getCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
 
   const [puzzle, allTeams] = await Promise.all([
     prisma.dailyPuzzle.findUnique({
-      where: { date: new Date(today) },
+      where: { date: new Date(dateStr) },
       include: {
         player: {
           include: {
@@ -81,9 +85,7 @@ export async function getTodaysPuzzle(anonymousId = null, authenticatedUserId = 
   ]);
 
   if (!puzzle) {
-    const err = new Error(`No puzzle scheduled for ${today}.`);
-    err.statusCode = 404;
-    throw err;
+    return null;
   }
 
   const { player } = puzzle;
@@ -108,6 +110,75 @@ export async function getTodaysPuzzle(anonymousId = null, authenticatedUserId = 
     }
   }
 
+  const stintsData = stints.map((s) => ({
+    stintOrder: s.stintOrder,
+    teamId: s.team.id,
+    teamName: s.team.name,
+    abbreviation: s.team.abbreviation,
+    startYear: s.startYear,
+    endYear: s.endYear,
+  }));
+
+  const basePayload = {
+    puzzleId: puzzle.id,
+    puzzleNumber: puzzle.puzzleNumber,
+    date: dateStr,
+    difficulty: puzzle.difficulty,
+    maxAttempts: puzzle.maxAttempts,
+    player: {
+      id: player.id,
+      name: `${player.firstName} ${player.lastName}`,
+      imageUrl: player.imageUrl ?? null,
+    },
+    stintCount: stints.length,
+    availableTeams,
+    stints: stintsData,
+  };
+
+  await setCache(cacheKey, basePayload, BASE_PUZZLE_CACHE_TTL);
+  return basePayload;
+}
+
+/**
+ * Pre-warm the cache for a given UTC date.
+ * Used by server startup and the UTC midnight cron job.
+ *
+ * @param {string} [dateStr=todayUTC()]
+ * @returns {Promise<object|null>}
+ */
+export async function warmDailyPuzzleCache(dateStr = todayUTC()) {
+  const base = await fetchBaseDailyPuzzle(dateStr);
+  if (base) {
+    console.log(`⚡ [CACHE WARMER] Successfully cached puzzle #${base.puzzleNumber} for ${dateStr}.`);
+  }
+  return base;
+}
+
+// ---------------------------------------------------------------------------
+// getTodaysPuzzle
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch the puzzle for today (UTC date) and return the sanitised public DTO.
+ *
+ * The answer (ordered team IDs) is NEVER returned here unless game over.
+ * `availableTeams` is the full de-duplicated list of teams — client uses it to populate the team selector.
+ *
+ * @param {string|null} [anonymousId=null]
+ * @param {string|null} [authenticatedUserId=null]
+ * @returns {Promise<object>} Public puzzle payload
+ * @throws  If no puzzle is scheduled for today
+ */
+export async function getTodaysPuzzle(anonymousId = null, authenticatedUserId = null) {
+  const today = todayUTC();
+  const base = await fetchBaseDailyPuzzle(today);
+
+  if (!base) {
+    const err = new Error(`No puzzle scheduled for ${today}.`);
+    err.statusCode = 404;
+    throw err;
+  }
+
   // Resolve user identity to check for existing progress
   let userId = authenticatedUserId;
   if (!userId && anonymousId) {
@@ -120,13 +191,13 @@ export async function getTodaysPuzzle(anonymousId = null, authenticatedUserId = 
   let userResult = null;
   if (userId) {
     const result = await prisma.dailyResult.findUnique({
-      where: { userId_puzzleId: { userId, puzzleId: puzzle.id } },
+      where: { userId_puzzleId: { userId, puzzleId: base.puzzleId } },
     });
 
     if (result) {
       const won = result.won;
       const attempts = result.attempts;
-      const gameOver = won || attempts >= puzzle.maxAttempts;
+      const gameOver = won || attempts >= base.maxAttempts;
 
       userResult = {
         won,
@@ -137,31 +208,20 @@ export async function getTodaysPuzzle(anonymousId = null, authenticatedUserId = 
       };
 
       if (gameOver) {
-        userResult.answer = stints.map((s) => ({
-          stintOrder: s.stintOrder,
-          teamId: s.team.id,
-          teamName: s.team.name,
-          abbreviation: s.team.abbreviation,
-          startYear: s.startYear,
-          endYear: s.endYear,
-        }));
+        userResult.answer = base.stints;
       }
     }
   }
 
   const payload = {
-    puzzleId: puzzle.id,
-    puzzleNumber: puzzle.puzzleNumber,
-    date: today,
-    difficulty: puzzle.difficulty,
-    maxAttempts: puzzle.maxAttempts,
-    player: {
-      id: player.id,
-      name: `${player.firstName} ${player.lastName}`,
-      imageUrl: player.imageUrl ?? null,
-    },
-    stintCount: stints.length,
-    availableTeams,
+    puzzleId: base.puzzleId,
+    puzzleNumber: base.puzzleNumber,
+    date: base.date,
+    difficulty: base.difficulty,
+    maxAttempts: base.maxAttempts,
+    player: base.player,
+    stintCount: base.stintCount,
+    availableTeams: base.availableTeams,
   };
 
   if (userResult) {
@@ -196,27 +256,15 @@ export async function submitGuess(guess, anonymousId, authenticatedUserId = null
   const today = todayUTC();
 
   // 1. Load puzzle + ordered stints (the answer)
-  const puzzle = await prisma.dailyPuzzle.findUnique({
-    where: { date: new Date(today) },
-    include: {
-      player: {
-        include: {
-          careerStints: {
-            orderBy: { stintOrder: 'asc' },
-            include: { team: true },
-          },
-        },
-      },
-    },
-  });
+  const base = await fetchBaseDailyPuzzle(today);
 
-  if (!puzzle) {
+  if (!base) {
     const err = new Error(`No puzzle scheduled for ${today}.`);
     err.statusCode = 404;
     throw err;
   }
 
-  const answer = puzzle.player.careerStints.map((s) => s.team.id);
+  const answer = base.stints.map((s) => s.teamId);
 
   // 2. Validate the submitted guess
   validateGuess(guess, answer.length); // throws ValidationError on bad input
@@ -231,12 +279,12 @@ export async function submitGuess(guess, anonymousId, authenticatedUserId = null
   // 4. Load existing DailyResult (if any)
   let result = userId
     ? await prisma.dailyResult.findUnique({
-        where: { userId_puzzleId: { userId, puzzleId: puzzle.id } },
+        where: { userId_puzzleId: { userId, puzzleId: base.puzzleId } },
       })
     : null;
 
-  const previousGuesses = result ? (result.guesses) : [];
-  const previousFeedback = result ? (result.feedback) : [];
+  const previousGuesses = result ? result.guesses : [];
+  const previousFeedback = result ? result.feedback : [];
 
   // Guard: game already won
   if (result && result.won) {
@@ -246,8 +294,8 @@ export async function submitGuess(guess, anonymousId, authenticatedUserId = null
   }
 
   // Guard: attempt limit exhausted
-  if (previousGuesses.length >= puzzle.maxAttempts) {
-    const err = new Error(`Maximum attempts (${puzzle.maxAttempts}) reached.`);
+  if (previousGuesses.length >= base.maxAttempts) {
+    const err = new Error(`Maximum attempts (${base.maxAttempts}) reached.`);
     err.statusCode = 409;
     throw err;
   }
@@ -259,13 +307,13 @@ export async function submitGuess(guess, anonymousId, authenticatedUserId = null
   const updatedGuesses = [...previousGuesses, guess];
   const updatedFeedback = [...previousFeedback, feedback];
   const attemptNumber = updatedGuesses.length;
-  const gameOver = won || attemptNumber >= puzzle.maxAttempts;
+  const gameOver = won || attemptNumber >= base.maxAttempts;
 
   // 6. Persist (only if we have a userId)
   if (userId) {
     if (result) {
       await prisma.dailyResult.update({
-        where: { userId_puzzleId: { userId, puzzleId: puzzle.id } },
+        where: { userId_puzzleId: { userId, puzzleId: base.puzzleId } },
         data: {
           won,
           attempts: attemptNumber,
@@ -277,7 +325,7 @@ export async function submitGuess(guess, anonymousId, authenticatedUserId = null
       await prisma.dailyResult.create({
         data: {
           userId,
-          puzzleId: puzzle.id,
+          puzzleId: base.puzzleId,
           won,
           attempts: attemptNumber,
           guesses: updatedGuesses,
@@ -289,9 +337,9 @@ export async function submitGuess(guess, anonymousId, authenticatedUserId = null
 
   // 7. Build response — answer only when game is over
   const response = {
-    puzzleId: puzzle.id,
+    puzzleId: base.puzzleId,
     attemptNumber,
-    maxAttempts: puzzle.maxAttempts,
+    maxAttempts: base.maxAttempts,
     guess,
     feedback,
     won,
@@ -299,14 +347,7 @@ export async function submitGuess(guess, anonymousId, authenticatedUserId = null
   };
 
   if (gameOver) {
-    response.answer = puzzle.player.careerStints.map((s) => ({
-      stintOrder: s.stintOrder,
-      teamId: s.team.id,
-      teamName: s.team.name,
-      abbreviation: s.team.abbreviation,
-      startYear: s.startYear,
-      endYear: s.endYear,
-    }));
+    response.answer = base.stints;
   }
 
   return response;

@@ -28,6 +28,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../src/app.js';
+import { delPattern } from '../src/lib/redis.js';
 
 // ---------------------------------------------------------------------------
 // Mock Prisma so we never hit a real database
@@ -135,8 +136,9 @@ function mockAnonymousUser() {
 // Suites
 // ---------------------------------------------------------------------------
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.clearAllMocks();
+  await delPattern('*');
 });
 
 // ===========================================================================

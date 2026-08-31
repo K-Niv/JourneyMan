@@ -14,6 +14,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 import bcrypt from 'bcrypt';
 import app from '../src/app.js';
+import { delPattern } from '../src/lib/redis.js';
 
 // ---------------------------------------------------------------------------
 // Mock Prisma
@@ -60,9 +61,10 @@ const MOCK_TEAMS = [
   { id: 'bos', name: 'Boston Celtics', abbreviation: 'BOS', logoUrl: '/bos.png' },
 ];
 
+const TODAY_DATE_STR = new Date().toISOString().slice(0, 10);
 const MOCK_PUZZLE = {
   id: 'puzzle-e2e-001',
-  date: new Date('2026-08-29T00:00:00.000Z'),
+  date: new Date(TODAY_DATE_STR),
   puzzleNumber: 101,
   difficulty: 'medium',
   maxAttempts: 6,
@@ -101,8 +103,9 @@ const MOCK_PUZZLE = {
 };
 
 describe('End-to-End Game Lifecycle Tests', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    await delPattern('*');
   });
 
   it('executes the full happy path: guest plays, wins, registers, links history, and views stats', async () => {
@@ -296,10 +299,10 @@ describe('End-to-End Game Lifecycle Tests', () => {
         puzzleId: 'puzzle-e2e-001',
         won: true,
         attempts: 2,
-        completedAt: new Date('2026-08-29T12:00:00Z'),
+        completedAt: new Date(),
         puzzle: {
           id: 'puzzle-e2e-001',
-          date: new Date('2026-08-29T00:00:00Z'),
+          date: new Date(TODAY_DATE_STR),
           puzzleNumber: 101,
           difficulty: 'medium',
           player: {

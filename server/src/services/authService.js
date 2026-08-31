@@ -14,10 +14,12 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma.js';
+import { getCache, setCache, delCache } from '../lib/redis.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
 const SALT_ROUNDS = 12;
 const TOKEN_EXPIRY = '7d';
+const USER_PROFILE_CACHE_TTL = 86400; // 24 hours in seconds
 
 /**
  * Standard email validation regex.
@@ -158,6 +160,12 @@ export async function getUserProfile(userId) {
     throw err;
   }
 
+  const cacheKey = `user:profile:${userId}`;
+  const cached = await getCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -174,6 +182,7 @@ export async function getUserProfile(userId) {
     throw err;
   }
 
+  await setCache(cacheKey, user, USER_PROFILE_CACHE_TTL);
   return user;
 }
 
@@ -236,6 +245,9 @@ export async function linkAnonymousAccount(userId, anonymousId) {
       where: { id: anonUser.id },
     });
   });
+
+  // Invalidate profile cache
+  await delCache(`user:profile:${userId}`);
 
   return {
     message: 'Anonymous account history successfully linked.',

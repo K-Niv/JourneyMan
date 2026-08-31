@@ -12,6 +12,7 @@ import request from 'supertest';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import app from '../src/app.js';
+import { delPattern } from '../src/lib/redis.js';
 
 // ---------------------------------------------------------------------------
 // Mock Prisma
@@ -41,8 +42,9 @@ import prisma from '../src/lib/prisma.js';
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-change-in-production';
 
 describe('Auth Endpoints', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    await delPattern('*');
   });
 
   // =========================================================================

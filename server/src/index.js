@@ -1,9 +1,12 @@
 import app from './app.js';
 import { config } from './config/env.js';
 import prisma from './lib/prisma.js';
+import { disconnectRedis } from './lib/redis.js';
+import { initCronJobs } from './jobs/cronWorker.js';
 
 const server = app.listen(config.port, () => {
   console.log(`🚀 JourneyMan Express Server running on port ${config.port} [${config.nodeEnv}]`);
+  initCronJobs();
 });
 
 /**
@@ -14,11 +17,14 @@ const gracefulShutdown = async (signal) => {
   server.close(async () => {
     console.log('🔒 Closed HTTP server.');
     try {
-      await prisma.$disconnect();
-      console.log('🔌 Disconnected Prisma database client.');
+      await Promise.allSettled([
+        prisma.$disconnect(),
+        disconnectRedis(),
+      ]);
+      console.log('🔌 Disconnected database and cache clients.');
       process.exit(0);
     } catch (err) {
-      console.error('❌ Error during Prisma disconnect:', err);
+      console.error('❌ Error during shutdown:', err);
       process.exit(1);
     }
   });

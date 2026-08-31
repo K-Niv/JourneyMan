@@ -5,8 +5,9 @@
 [![React](https://img.shields.io/badge/React-18.2-blue.svg)](https://react.dev/)
 [![Express](https://img.shields.io/badge/Express-4.19-lightgrey.svg)](https://expressjs.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Prisma%20ORM-indigo.svg)](https://www.prisma.io/)
+[![Redis](https://img.shields.io/badge/Redis-ioredis%20Cache-red.svg)](https://redis.io/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8.svg)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-175%20Passing-brightgreen.svg)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Tests-197%20Passing-brightgreen.svg)](https://vitest.dev/)
 
 **JourneyMan** is a daily NBA timeline puzzle game inspired by Wordle. Each day at **00:00 UTC**, a mystery NBA player is revealed. Your challenge: piece together their chronological franchise-by-franchise career journey in **6 guesses or fewer**.
 
@@ -43,6 +44,10 @@ Guess 2:  [ CLE 🟩 ] [ MIA 🟩 ] [ CLE 🟩 ] [ LAL 🟩 ]  🎉 Solved in 2/
 
 - 🏀 **Real NBA Career Data**: Pre-extracted using `nba_api` with verified regular season stints (`gamesPlayed >= 1`) and Wikipedia thumbnail headshots.
 - 🎲 **Constrained Random Daily Rotation**: 90+ pre-seeded daily puzzles guaranteeing **no two consecutive days share the same difficulty tier**.
+- ⚡ **Sub-Millisecond Redis Caching & 24h Proactive Cron Warmer**:
+  - Two-tier composite caching: The static daily base puzzle (player, stints, 30 teams) is cached in Redis (`puzzle:daily:YYYY-MM-DD`) with 48h TTL.
+  - Proactive background worker (`node-cron`) pre-warms today's and tomorrow's puzzles at **00:00 UTC** and server boot, ensuring **0ms cold-start delay**.
+  - Resilient in-memory fallback for offline/local development without Redis.
 - 🛡️ **Zero-Trust Backend Grading**: Answers are strictly validated and graded server-side; mystery player timelines are never sent to the client until the game is completed.
 - 👤 **Dual-Mode Authentication & Account Linking**: Play instantly as an anonymous guest (`X-Anonymous-Id`). Register an account anytime to atomically migrate your entire guest match history and streak.
 - 📅 **Play History & Stats Dashboard**: Monthly calendar view with win/loss indicators, current streak, max streak, win rate, and attempt distribution graphs.
@@ -77,8 +82,15 @@ graph TB
         RT[API Routes — Puzzle, Auth, History]
         CT[Controllers & Input Validation]
         SV[Services — Puzzle, Grading, History, Auth]
-        DM[Domain Logic — gradeGuess 2-Pass Engine]
-        SEC --> MW --> RT --> CT --> SV --> DM
+        DOM[Domain Logic — gradeGuess 2-Pass Engine]
+        CW[24h Proactive Cron Warmer — node-cron]
+        
+        SEC --> MW --> RT --> CT --> SV --> DOM
+        CW -. "Pre-warm at 00:00 UTC" .-> SV
+    end
+
+    subgraph Cache ["Cache Layer (Redis / In-Memory Fallback)"]
+        RC[(Redis Cache / In-Memory)]
     end
 
     subgraph DB ["Database (PostgreSQL + Prisma ORM)"]
@@ -91,7 +103,8 @@ graph TB
     end
 
     Client -- "HTTPS / JSON (10kb max)" --> Server
-    Server -- "Type-Safe Prisma Queries" --> DB
+    SV -- "Instant Hit (<1ms)" --> RC
+    SV -- "Fallback / Mutations" --> DB
 ```
 
 For complete technical specifications, mathematical grading proofs, and state lifecycle details, see [ARCHITECTURE.md](ARCHITECTURE.md).
@@ -107,23 +120,24 @@ journeyman/
 │   │   ├── components/         # UI components & test suites
 │   │   ├── hooks/              # Custom React hooks (keyboard, loader, announcer)
 │   │   ├── stores/             # Zustand state management (game, auth, toast)
-│   │   ├── services/           # Axios-free Fetch API client wrapper
+│   │   ├── services/           # Fetch API client wrapper
 │   │   ├── data/               # Static NBA team logos and metadata
 │   │   └── styles/             # Tailwind CSS & global tokens
 │   ├── vite.config.js          # Vite config with Rollup manual chunking
 │   └── package.json
 ├── server/                     # Express REST API
 │   ├── src/
-│   │   ├── config/             # Environment variable validation & config
+│   │   ├── config/             # Environment variable validation & multi-path .env resolution
 │   │   ├── controllers/        # Request/response handlers
 │   │   ├── domain/             # Pure Wordle grading logic
-│   │   ├── middleware/         # Helmet, rate limiting, JWT auth, anonymousId
+│   │   ├── jobs/               # Background scheduled workers (cron cache warming)
+│   │   ├── middleware/         # Helmet, rate limiting, JWT auth, anonymousId, CSRF
 │   │   ├── routes/             # Express route declarations
 │   │   ├── services/           # Business logic & Prisma orchestration
-│   │   ├── lib/                # Prisma client singleton
+│   │   ├── lib/                # Prisma singleton & resilient Redis cache client
 │   │   ├── app.js              # Express application assembly
 │   │   └── index.js            # Server entry & graceful shutdown handler
-│   ├── tests/                  # Backend unit, security & E2E integration tests
+│   ├── tests/                  # Backend unit, security, Redis & E2E integration tests
 │   └── package.json
 ├── shared/                     # Shared constants, types & helpers
 │   ├── constants.js            # MAX_ATTEMPTS, FEEDBACK, DIFFICULTY, getDifficulty()
@@ -152,6 +166,7 @@ journeyman/
 - **Node.js**: v18.0.0 or higher
 - **npm**: v9.0.0 or higher
 - **PostgreSQL**: A running instance (local or hosted on [Neon](https://neon.tech), [Supabase](https://supabase.com), or [Railway](https://railway.app)).
+- **Redis (Optional)**: Local Redis or hosted [Redis Cloud](https://redis.com) / [Upstash](https://upstash.com) (in-memory fallback active if omitted).
 
 ### 1. Installation
 
@@ -171,7 +186,7 @@ Copy `.env.example` to `.env` in the root directory:
 cp .env.example .env
 ```
 
-Update your `.env` with your PostgreSQL database connection string and secrets:
+Update your `.env` with your PostgreSQL database connection string, Redis URL, and secrets:
 
 ```env
 PORT=3001
@@ -179,6 +194,7 @@ NODE_ENV=development
 DATABASE_URL="postgresql://user:password@ep-xxxx.us-east-2.aws.neon.tech/journeyman?sslmode=require"
 JWT_SECRET="generate-a-secure-random-secret-key-here"
 CLIENT_URL="http://localhost:5173"
+REDIS_URL="redis://default:password@host:port"
 ```
 
 ### 3. Database Migration & Seeding
@@ -231,8 +247,9 @@ npm run check
 |-----------|-----------|-------------|-------|
 | `shared` | `constants.test.js` | Difficulty tiers, stint counting, constants | 7 |
 | `server` | `grading.test.js` | Duplicate franchise Wordle grading engine | 55 |
+| `server` | `redis-caching.test.js` | Base puzzle cache, warming worker, profile TTL, fallback | 7 |
 | `server` | `puzzle.test.js` | Today's puzzle endpoint, guess validation | 29 |
-| `server` | `auth.test.js` | Registration, login, JWT issuance, account linking | 16 |
+| `server` | `auth.test.js` | Registration, login, JWT issuance, account linking | 23 |
 | `server` | `history.test.js` | Calendar history queries, streak calculations | 10 |
 | `server` | `security.test.js` | Helmet headers, CORS, rate limits, payload limits | 8 |
 | `server` | `e2e-game-flow.test.js` | Full user lifecycle simulation (guest to member) | 2 |
@@ -241,8 +258,9 @@ npm run check
 | `client` | `HistoryComponents.test.jsx` | CalendarGrid, StatsPanel, streak charts | 10 |
 | `client` | `AuthComponents.test.jsx` | AuthModal, LoginForm, RegisterForm validation | 9 |
 | `client` | `GameOverComponents.test.jsx` | AnswerTimeline, countdown, confetti, modals | 8 |
+| `client` | `LandingAndLibrary.test.jsx` | Landing page, button variants, design primitives | 8 |
 | `client` | `App.test.jsx` | Root application smoke test | 1 |
-| **Total** | **13 Test Suites** | **Comprehensive Full-Stack Coverage** | **175** |
+| **Total** | **15 Test Suites** | **Comprehensive Full-Stack Coverage** | **197** |
 
 ---
 

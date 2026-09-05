@@ -21,6 +21,7 @@ export default function LandingPage({
   _onOpenAuth,
   puzzleNumber = 1,
   puzzleDate = 'Today',
+  isLoading = false,
 }) {
   const [activePreviewIndex, setActivePreviewIndex] = useState(1);
 
@@ -88,7 +89,9 @@ export default function LandingPage({
             id="hero-play-button"
             size="lg"
             variant="primary"
-            className="w-full sm:w-auto text-base px-8 py-3.5 shadow-brutal text-[#0F0024] font-extrabold uppercase tracking-wide hover:shadow-brutal-lg transition-all"
+            disabled={isLoading}
+            aria-disabled={isLoading}
+            className="w-full sm:w-auto text-base px-8 py-3.5 shadow-brutal text-[#0F0024] font-extrabold uppercase tracking-wide hover:shadow-brutal-lg transition-all disabled:opacity-50 disabled:pointer-events-none"
             onClick={onPlay}
           >
             <Play className="w-5 h-5 mr-2 fill-[#0F0024]" />
@@ -99,7 +102,9 @@ export default function LandingPage({
             id="hero-rules-button"
             size="lg"
             variant="secondary"
-            className="w-full sm:w-auto text-base px-6 py-3.5 shadow-brutal-sm text-[#0F0024] font-bold tracking-wide"
+            disabled={isLoading}
+            aria-disabled={isLoading}
+            className="w-full sm:w-auto text-base px-6 py-3.5 shadow-brutal-sm text-[#0F0024] font-bold tracking-wide disabled:opacity-50 disabled:pointer-events-none"
             onClick={onOpenHelp}
           >
             <HelpCircle className="w-5 h-5 mr-2 text-[#0F0024]" />

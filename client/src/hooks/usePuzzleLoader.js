@@ -14,7 +14,7 @@
  * just call `usePuzzleLoader()` and read `isLoading` / `error` from it.
  */
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useGameStore } from '../stores/gameStore.js';
 import { useAuthStore } from '../stores/authStore.js';
 
@@ -29,48 +29,81 @@ function todayUTC() {
 }
 
 /**
- * Hook that loads (or rehydrates) today's puzzle on mount.
+ * Hook that loads (or rehydrates) today's puzzle and validates auth session on mount.
+ * Coordinates both network requests so consumers know when both operations complete.
  *
- * @returns {{ isLoading: boolean, error: string|null }}
+ * @returns {{ isLoading: boolean, isPuzzleLoading: boolean, isAuthLoading: boolean, error: string|null }}
  */
 export function usePuzzleLoader() {
-  const isLoading = useGameStore((s) => s.isLoading);
+  const isGameLoading = useGameStore((s) => s.isLoading);
   const error = useGameStore((s) => s.error);
   const puzzleDate = useGameStore((s) => s.puzzleDate);
   const puzzleId = useGameStore((s) => s.puzzleId);
   const resetGame = useGameStore((s) => s.resetGame);
   const loadPuzzle = useGameStore((s) => s.loadPuzzle);
+  const isProfileLoading = useAuthStore((s) => s.isProfileLoading);
   const ensureAnonymousId = useAuthStore((s) => s.ensureAnonymousId);
   const loadProfile = useAuthStore((s) => s.loadProfile);
 
+  // Synchronous initial loading tracking to prevent 1-frame unrendered flash on cold mount
+  const [isInitialAuthLoading, setIsInitialAuthLoading] = useState(true);
+  const [isInitialPuzzleLoading, setIsInitialPuzzleLoading] = useState(() => {
+    const today = todayUTC();
+    const state = useGameStore.getState();
+    const isStale = state.puzzleDate !== today;
+    const isEmpty = !state.puzzleId;
+    const hasIncompleteTeams = !state.availableTeams || state.availableTeams.length < 30;
+    return isStale || isEmpty || hasIncompleteTeams;
+  });
+
   useEffect(() => {
+    let isMounted = true;
+
     // Step 1: Ensure anonymous identity exists & validate authenticated token
     ensureAnonymousId();
-    loadProfile();
+    Promise.resolve(loadProfile()).finally(() => {
+      if (isMounted) {
+        setIsInitialAuthLoading(false);
+      }
+    });
 
-    // Step 2: Check date staleness
+    // Step 2: Check date staleness and load puzzle if needed
     const today = todayUTC();
     const availableTeams = useGameStore.getState().availableTeams;
     const isStale = puzzleDate !== today;
     const isEmpty = !puzzleId;
     const hasIncompleteTeams = !availableTeams || availableTeams.length < 30;
 
+    let puzzlePromise = Promise.resolve();
     if (isStale || isEmpty) {
       // Date changed or no puzzle loaded — reset and fetch fresh data
       resetGame();
-      loadPuzzle();
+      puzzlePromise = Promise.resolve(loadPuzzle());
     } else if (hasIncompleteTeams) {
       // Refresh puzzle data to get all 30 teams without losing current game progress
-      loadPuzzle();
+      puzzlePromise = Promise.resolve(loadPuzzle());
     }
-    // If dates match and game is active, the persisted state is already valid.
-    // We intentionally do NOT re-fetch in that case.
 
+    puzzlePromise.finally(() => {
+      if (isMounted) {
+        setIsInitialPuzzleLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // Empty dep array: run once on mount. The staleness check is point-in-time.
-  // If the user leaves the tab open overnight, they'll get the new puzzle
-  // on next page interaction (visibility change could be added in a future PR).
 
-  return { isLoading, error };
+  const isPuzzleLoading = isGameLoading || isInitialPuzzleLoading;
+  const isAuthLoading = isProfileLoading || isInitialAuthLoading;
+  const isLoading = isPuzzleLoading || isAuthLoading;
+
+  return {
+    isLoading,
+    isPuzzleLoading,
+    isAuthLoading,
+    error,
+  };
 }

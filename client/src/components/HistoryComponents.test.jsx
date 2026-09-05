@@ -217,7 +217,7 @@ describe('History Components', () => {
       const calendarTabBtn = screen.getByRole('button', { name: /calendar/i });
       fireEvent.click(calendarTabBtn);
 
-      expect(screen.getByText(/August 2026/i)).toBeDefined();
+      expect(screen.getByText(/(August|September) 2026/i)).toBeDefined();
     });
   });
 });

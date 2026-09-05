@@ -36,8 +36,9 @@ import { toast } from './toastStore.js';
  * @typedef {object} AuthState
  * @property {UserProfile|null} user           - Authenticated user profile (null for anon)
  * @property {string|null}      anonymousId    - Client-generated UUID for anonymous sessions
- * @property {boolean}          isAuthLoading  - Loading state for auth operations
- * @property {string|null}      authError      - Error message from last auth action
+ * @property {boolean}          isAuthLoading    - Loading state for auth operations
+ * @property {boolean}          isProfileLoading - Loading state for profile/session check
+ * @property {string|null}      authError        - Error message from last auth action
  */
 
 export const useAuthStore = create(
@@ -49,6 +50,7 @@ export const useAuthStore = create(
       user: null,
       anonymousId: null,
       isAuthLoading: false,
+      isProfileLoading: false,
       authError: null,
 
       // -----------------------------------------------------------------------
@@ -195,14 +197,18 @@ export const useAuthStore = create(
        * Validate HTTP-only session cookie and refresh user profile on app load.
        */
       loadProfile: async () => {
+        set({ isProfileLoading: true });
         try {
           const { user } = await fetchUserProfile();
-          set({ user });
+          set({ user, isProfileLoading: false });
+          return user;
         } catch (err) {
           // Cookie is expired or invalid — clear user auth state gracefully
           if (err.status === 401 || err.status === 404) {
             set({ user: null });
           }
+          set({ isProfileLoading: false });
+          return null;
         }
       },
 
@@ -252,6 +258,7 @@ export const useAuthStore = create(
           anonymousId: null,
           authError: null,
           isAuthLoading: false,
+          isProfileLoading: false,
         });
       },
     }),

@@ -29,6 +29,7 @@ import PlayerInfo from '@/components/PlayerInfo';
 import GuessGrid from '@/components/GuessGrid';
 import GameOverModal from '@/components/GameOverModal';
 import BoardSkeleton from '@/components/BoardSkeleton';
+import LandingLoader from '@/components/LandingLoader';
 import ToastContainer from '@/components/ui/ToastContainer';
 import { Button } from '@/components/ui/button';
 import { Eraser, Send, Loader2, Trophy } from 'lucide-react';
@@ -186,7 +187,7 @@ export default function App() {
     showHelp || showAuthModal || showHistoryModal || showGameOverModal || openSlotIndex !== null;
 
   useKeyboardShortcuts({
-    enabled: !anyModalOpen && currentView === 'game',
+    enabled: !anyModalOpen && currentView === 'game' && !isLoading,
     stintCount,
     currentGuess,
     feedback,
@@ -223,7 +224,10 @@ export default function App() {
   const mainWidthClass = stintCount >= 7 ? 'max-w-xl' : 'max-w-lg';
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-[#F5ECDF] text-[#212121] selection:bg-[#DAAE4F] selection:text-[#0F0024] font-sans">
+    <div
+      aria-busy={isLoading}
+      className="min-h-screen flex flex-col items-center bg-[#F5ECDF] text-[#212121] selection:bg-[#DAAE4F] selection:text-[#0F0024] font-sans"
+    >
       {/* Screen Reader Live Announcements */}
       <div
         role="status"
@@ -253,13 +257,17 @@ export default function App() {
       {/* VIEW 1: LANDING PAGE */}
       {/* ===================================================================== */}
       {currentView === 'landing' && (
-        <LandingPage
-          onPlay={() => setCurrentView('game')}
-          onOpenHelp={() => setShowHelp(true)}
-          onOpenAuth={() => setShowAuthModal(true)}
-          puzzleNumber={puzzleNumber}
-          puzzleDate={puzzleDate}
-        />
+        <>
+          <LandingPage
+            onPlay={() => setCurrentView('game')}
+            onOpenHelp={() => setShowHelp(true)}
+            onOpenAuth={() => setShowAuthModal(true)}
+            puzzleNumber={puzzleNumber}
+            puzzleDate={puzzleDate}
+            isLoading={isLoading}
+          />
+          {isLoading && <LandingLoader />}
+        </>
       )}
 
       {/* ===================================================================== */}
